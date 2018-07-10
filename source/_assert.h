@@ -5,8 +5,9 @@
 #ifndef TESTABLE_ASSERT_H
 #define TESTABLE_ASSERT_H
 
-#include <setjmp.h>
+
 #include "../include/portable.h"
+#include <setjmp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,7 +21,13 @@ extern "C" {
 #define ASSERT_MSG_BUFFER_SIZE 512
 #endif
 
-VOID _assert_set_fail_callback(void (*callback)(int code, char * message));
+jmp_buf  *_assert_get_fail_point();
+
+VOID _assert_push_fail_point(jmp_buf *point);
+
+jmp_buf * _assert_pop_fail_point();
+
+VOID _assert_set_fail_callback(void (*callback)(int code, char *message));
 
 /** CHAR **/
 VOID _assert_char_equal(ARG(CHAR, expected), ARG(CHAR, actual), LOC, MSG);

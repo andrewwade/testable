@@ -7,7 +7,6 @@
 #include <setjmp.h>
 #include <printf.h>
 
-extern jmp_buf test_jump;
 jmp_buf temp_jump;
 
 void copy_jmp(jmp_buf dest, jmp_buf src) {
@@ -18,17 +17,26 @@ void copy_jmp(jmp_buf dest, jmp_buf src) {
 
 int asserts_failed = 0;
 int assert_fail_count = 0;
-void assert_failure(_assert_t *assert) {
-    printf("%s", assert->message);
+void assert_failure(int code, char *message) {
+    printf("%s", message);
+    fflush(stdout);
     asserts_failed++;
-    longjmp(temp_jump);
 }
 
-#define EXPECT_ASSERT_FAIL(call, message...)   \
-_assert_set_fail_callback(assert_failure);     \
-assert_fail_count = asserts_failed;            \
-call;                                          \
-if(asserts_failed == assert_fail_count+1) {TEST_FAIL();}
+void assert_failure_expected(int code, char *message) {
+    asserts_failed++;
+}
+
+#define EXPECT_ASSERT_FAIL(call, message...)            \
+_assert_set_fail_callback(assert_failure_expected);     \
+_assert_push_fail_point(&temp_jump);                    \
+if(!setjmp(temp_jump)) {                                \
+    assert_fail_count = asserts_failed;                 \
+    call;                                               \
+}                                                       \
+_assert_pop_fail_point();                               \
+_assert_set_fail_callback(assert_failure);              \
+ASSERT_INT_EQ(assert_fail_count+1,asserts_failed, message)
 
 TEST(_node_initialize_check_for_null_node) {
     EXPECT_ASSERT_FAIL(_node_initialize(NULL, NULL), "_node_initialize did not check for NULL");
@@ -37,7 +45,6 @@ TEST(_node_initialize_check_for_null_node) {
 TEST(_node_initialize_allow_null_data) {
     _node_t node;
     _node_initialize(&node, NULL);
-    printf("%s", test->name);
 }
 
 TEST(_node_initialize_set_next_to_node) {

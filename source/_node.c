@@ -36,7 +36,7 @@ void _node_release(_node_t *node) {
 void _node_initialize(_node_t *node, void *data) {
 
     /* check that node is not NULL */
-    ASSERT_PTR_NE(NULL, node);
+    ASSERT_PTR_NE(NULL, node, "Node cannot be NULL");
 
     node->data = data;
 
@@ -46,9 +46,8 @@ void _node_initialize(_node_t *node, void *data) {
 }
 
 void _node_insert(_node_t *head, _node_t *node) {
-    if (head == NULL || node == NULL) {
-        return;
-    }
+    ASSERT_PTR_NE(NULL, head);
+    ASSERT_PTR_NE(NULL, node);
 
     /* link node to head */
     node->next = head;

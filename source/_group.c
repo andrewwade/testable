@@ -7,13 +7,11 @@
 #include "_test.h"
 #include "_group.h"
 #include <stdio.h>
-#include <setjmp.h>
-
-jmp_buf test_jump = {0};
 
 void _group_run_all(_group_t *group) {
     _test_t *setup, *teardown, *test;
     _node_t *head, *node;
+    jmp_buf group_fail_point = {0};
 
     ASSERT_PTR_NE(NULL, group, "No group to run.");
 
@@ -24,6 +22,9 @@ void _group_run_all(_group_t *group) {
 
     ASSERT_PTR_NE(head, NULL, "No tests to run in group %s.", group->name);
 
+    /* add group fail point so assertions can fail properly */
+    _assert_push_fail_point(&group_fail_point);
+
     /* run all tests */
     do {
         if (node == NULL) {
@@ -32,8 +33,7 @@ void _group_run_all(_group_t *group) {
         }
 
         test = node->data;
-
-        if (!setjmp(test_jump)) {
+        if (!setjmp(group_fail_point)) {
             printf("Running Test[%s]:\n", test->name);
             /* check if setup exists */
             if (setup) {
@@ -53,12 +53,14 @@ void _group_run_all(_group_t *group) {
 
         } else {
             printf("Test %s failed.\n", test->name);
-            return;
         }
 
         /* move to next test */
         node = node->next;
     } while (node != head);
+
+    /* remove group fail point */
+    _assert_pop_fail_point();
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {

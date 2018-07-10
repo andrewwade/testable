@@ -72,6 +72,11 @@ _node_t *_node_filter(_node_t *node, int (*predicate)(_node_t *node));
 #define _node_prev(node) ((node)->prev)
 
 /**
+ * Access last node assuming (node) is head
+ */
+#define _node_last(node) ((node)->prev)
+
+/**
  * Data access
  */
 #define _node_data(node) ((node)->data)

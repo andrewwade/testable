@@ -6,18 +6,27 @@
 #define ASSERT_PTR_EQ_FAILED 1
 #define STRING_NAME(name) #name
 #define TO_STRING(x) STRING_NAME(x)
-#define ASSERT_FAILED(code, msg)    \
-if(fail_callback){                  \
-    fail_callback(code, msg);       \
-}                                   \
+#define ASSERT_FAILED(code, msg)           \
+assert_fail_callback(code, msg);           \
 longjmp(*(_assert_get_fail_point()), code)
 
 static _node_t *fail_jump_stack = NULL;
-
-static void (*fail_callback)(int code, char *message) = NULL;
+static _node_t *fail_callback_queue = NULL;
+static INT fail_callback_queue_count = 0;
 
 static char null[] = "NULL";
 
+
+static VOID assert_fail_callback(int code, char *message) {
+    fail_callback_t *callback;
+    if(fail_callback_queue != NULL) {
+        _node_t *node = fail_callback_queue;
+        do {
+            callback = node->data;
+            callback->call(callback->user, code, message);
+        } while(node != fail_callback_queue);
+    }
+}
 
 static void append_location(char *buf, char *file, unsigned int line) {
     unsigned int max_length = ASSERT_MSG_BUFFER_SIZE;
@@ -26,7 +35,7 @@ static void append_location(char *buf, char *file, unsigned int line) {
         max_length--;
         buf++;
     }
-    snprintf(buf, max_length, "%s(%d):\n", file, line);
+    snprintf(buf, max_length, "     Location: %s(%d):\n", file, line);
 }
 
 static void append_failure(char *buf, char *fmt, ...) {
@@ -151,8 +160,32 @@ jmp_buf *_assert_get_fail_point() {
     }
 }
 
-VOID _assert_set_fail_callback(void (*callback)(int code, char *message)) {
-    fail_callback = callback;
+VOID _assert_add_fail_callback(fail_callback_t *callback) {
+    _node_t *node = _node_allocate();
+    _node_initialize(node, callback);
+    if(fail_callback_queue == NULL) {
+        fail_callback_queue = node;
+    } else {
+        _node_insert(fail_callback_queue, node);
+    }
+    fail_callback_queue_count++;
+}
+
+VOID _assert_remove_fail_callback(fail_callback_t *callback) {
+    _node_t *node = fail_callback_queue;
+    do {
+        if(node->data == callback) {
+            _node_remove(node);
+            _node_release(node);
+            fail_callback_queue_count--;
+            break;
+        }
+        node = _node_next(node);
+    } while(node != fail_callback_queue);
+    if(fail_callback_queue_count == 0) {
+        fail_callback_queue = NULL;
+    }
+
 }
 
 VOID _assert_char_equal(CHAR *expected_name, CHAR expected, CHAR *actual_name, CHAR actual, CHAR *file, UINT line, char *message, ...) {
@@ -256,8 +289,9 @@ VOID _assert_int_equal(CHAR *expected_name, INT expected, CHAR*actual_name, INT 
         char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
 
         va_start(args, message);
-        append_location(buf, file, line);
+
         append_failure(buf, "INT should be equal to expected.");
+        append_location(buf, file, line);
         append_argument(buf, "Expected", expected_name, "%u", expected);
         append_argument(buf, "Actual", actual_name, "%u", actual);
         append_vmessage(buf, message, args);

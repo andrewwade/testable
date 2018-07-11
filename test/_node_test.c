@@ -23,19 +23,21 @@ void assert_failure(int code, char *message) {
     asserts_failed++;
 }
 
-void assert_failure_expected(int code, char *message) {
+void assert_failure_expected(void *user, int code, char *message) {
     asserts_failed++;
 }
+fail_callback_t expect_assert_fail = {NULL, assert_failure_expected};
 
-#define EXPECT_ASSERT_FAIL(call, message...)            \
-_assert_set_fail_callback(assert_failure_expected);     \
-_assert_push_fail_point(&temp_jump);                    \
-if(!setjmp(temp_jump)) {                                \
-    assert_fail_count = asserts_failed;                 \
-    call;                                               \
-}                                                       \
-_assert_pop_fail_point();                               \
-_assert_set_fail_callback(assert_failure);              \
+#define EXPECT_ASSERT_FAIL(call, message...)              \
+expect_assert_fail.user = test;                           \
+_assert_add_fail_callback(&expect_assert_fail);           \
+_assert_push_fail_point(&temp_jump);                      \
+if(!setjmp(temp_jump)) {                                  \
+    assert_fail_count = asserts_failed;                   \
+    call;                                                 \
+}                                                         \
+_assert_pop_fail_point();                                 \
+_assert_remove_fail_callback(&expect_assert_fail);        \
 ASSERT_INT_EQ(assert_fail_count+1,asserts_failed, message)
 
 TEST(_node_initialize_check_for_null_node) {

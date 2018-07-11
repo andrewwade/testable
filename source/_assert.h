@@ -21,13 +21,20 @@ extern "C" {
 #define ASSERT_MSG_BUFFER_SIZE 512
 #endif
 
-jmp_buf  *_assert_get_fail_point();
+typedef struct fail_callback_t {
+    void *user;
+    void (*call)(void *user, int code, char *message);
+} fail_callback_t;
+
+jmp_buf *_assert_get_fail_point();
 
 VOID _assert_push_fail_point(jmp_buf *point);
 
-jmp_buf * _assert_pop_fail_point();
+jmp_buf *_assert_pop_fail_point();
 
-VOID _assert_set_fail_callback(void (*callback)(int code, char *message));
+VOID _assert_add_fail_callback(fail_callback_t *callback);
+
+VOID _assert_remove_fail_callback(fail_callback_t *callback);
 
 /** CHAR **/
 VOID _assert_char_equal(ARG(CHAR, expected), ARG(CHAR, actual), LOC, MSG);

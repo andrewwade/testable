@@ -5,6 +5,7 @@
 #ifndef TESTABLE_TEST_H
 #define TESTABLE_TEST_H
 
+#include <testing.h>
 #include "../include/portable.h"
 #include "_node.h"
 
@@ -22,13 +23,15 @@ extern "C" {
  */
 typedef struct _test_t {
     /* name of the test */
-    CHAR            *name;
+    CHAR *name;
 
     /* status of the test */
-    INT             status;
+    INT status;
 
-    /* notes acquired during testing (if any)*/
-    _node_t  *notes;
+    /* notes acquired during testing (if any) */
+    _node_t *callbacks;
+
+    INT callbacks_count;
 
     /* test function  to run */
     VOID (*function)(struct _test_t *test);
@@ -55,6 +58,25 @@ _test_t *_test_allocate();
  */
 VOID _test_release(_test_t *test);
 
+/**
+ * Add failure callback for when test fails
+ * @param test
+ * @param callback
+ */
+VOID _test_add_fail_callback(_test_t *test, VOID *user, fail_callback_t *callback);
+
+/**
+ * Remove failure callback
+ * @param test
+ * @param callback
+ */
+VOID _test_remove_fail_callback(_test_t *test, VOID *user, fail_callback_t *callback);
+
+
+/**
+ * Run test
+ */
+VOID _test_run(_test_t *test);
 
 #ifdef __cplusplus
 };

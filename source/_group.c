@@ -8,7 +8,15 @@
 #include "_group.h"
 #include <stdio.h>
 
+#define OUTPUT_RESULT_ALIGNMENT 64
+
+static void group_test_fail_callback(void *user, int code, char *message) {
+    _group_t *group = user;
+    printf("Fail(%d)\n", code);
+}
+
 void _group_run_all(_group_t *group) {
+    int count = 0;
     _test_t *setup, *teardown, *test;
     _node_t *head, *node;
     jmp_buf group_fail_point = {0};
@@ -25,6 +33,7 @@ void _group_run_all(_group_t *group) {
     /* add group fail point so assertions can fail properly */
     _assert_push_fail_point(&group_fail_point);
 
+
     /* run all tests */
     do {
         if (node == NULL) {
@@ -33,8 +42,19 @@ void _group_run_all(_group_t *group) {
         }
 
         test = node->data;
+
+        /* add fail callback so output can print properly */
+        fail_callback_t group_fail_callback = {group, group_test_fail_callback};
+        _test_add_fail_callback(test, group, &group_fail_callback);
+
+        /* set group fail point using jump */
         if (!setjmp(group_fail_point)) {
-            printf("Running Test[%s]:\n", test->name);
+            count = printf("Running Test: %s...", test->name);
+            while(count < OUTPUT_RESULT_ALIGNMENT) {
+                printf(".");
+                count++;
+            }
+
             /* check if setup exists */
             if (setup) {
                 /* run setup */
@@ -42,25 +62,32 @@ void _group_run_all(_group_t *group) {
             }
 
             /* run test function */
-            test->function(test);
+            _test_run(test);
 
             /* check if teardown exists */
             if (teardown) {
                 /* run teardown function */
                 teardown->function(teardown);
             }
-            printf("  --Done\n");
+            _group_add_pass(group, test);
+
+            printf("Pass\n");
 
         } else {
-            printf("Test %s failed.\n", test->name);
+            _group_add_fail(group, test);
         }
+        /* remove test fail callback */
+        _test_remove_fail_callback(test, group, &group_fail_callback);
 
         /* move to next test */
         node = node->next;
     } while (node != head);
 
+
     /* remove group fail point */
     _assert_pop_fail_point();
+
+    printf("Test Group Passed %d out of %d.\n", group->pass_count, group->test_count);
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {
@@ -89,6 +116,7 @@ void _group_add_test(_group_t *group, _test_t *test) {
         /* add test to group */
         _node_insert(group->test, new_node);
     }
+    group->test_count++;
 }
 
 void _group_add_fail(_group_t *group, _test_t *test) {

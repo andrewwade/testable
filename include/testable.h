@@ -20,6 +20,7 @@ _test_t _test_##name = {                                    \
     #name,                                                  \
     0,                                                      \
     NULL,                                                   \
+    0,                                                      \
     &_test_##name##_function                                \
     };                                                      \
 _test_##name##_function(&_test_##name)

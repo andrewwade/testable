@@ -5,8 +5,8 @@
 #ifndef TESTABLE_TEST_H
 #define TESTABLE_TEST_H
 
-#include <testing.h>
-#include "../include/portable.h"
+#include <testable.h>
+#include "platform.h"
 #include "_node.h"
 
 #ifdef __cplusplus

@@ -9,6 +9,17 @@
 extern "C" {
 #endif
 
+typedef struct {
+    char *message;
+    char *tag;
+    char *level;
+    char *location;
+} output_t;
+
+
+typedef void (*output_handler_t)(output_t *output);
+
+void output_subscribe()
 
 #ifdef __cplusplus
 };

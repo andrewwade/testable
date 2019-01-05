@@ -1,7 +1,8 @@
-#include "../include/testing.h"
+#include "testable.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <memory.h>
+#include "_assert.h"s
 
 #define ASSERT_PTR_EQ_FAILED 1
 #define STRING_NAME(name) #name
@@ -10,21 +11,21 @@
 assert_fail_callback(code, msg);           \
 longjmp(*(_assert_get_fail_point()), code)
 
-static _node_t *fail_jump_stack = NULL;
-static _node_t *fail_callback_queue = NULL;
-static INT fail_callback_queue_count = 0;
+static _node_t *fail_jump_stack          = NULL;
+static _node_t *fail_callback_queue      = NULL;
+static INT     fail_callback_queue_count = 0;
 
 static char null[] = "NULL";
 
 
 static VOID assert_fail_callback(int code, char *message) {
     fail_callback_t *callback;
-    if(fail_callback_queue != NULL) {
+    if (fail_callback_queue != NULL) {
         _node_t *node = fail_callback_queue;
         do {
             callback = node->data;
             callback->call(callback->user, code, message);
-        } while(node != fail_callback_queue);
+        } while (node != fail_callback_queue);
     }
 }
 
@@ -163,7 +164,7 @@ jmp_buf *_assert_get_fail_point() {
 VOID _assert_add_fail_callback(fail_callback_t *callback) {
     _node_t *node = _node_allocate();
     _node_initialize(node, callback);
-    if(fail_callback_queue == NULL) {
+    if (fail_callback_queue == NULL) {
         fail_callback_queue = node;
     } else {
         _node_insert(fail_callback_queue, node);
@@ -174,15 +175,15 @@ VOID _assert_add_fail_callback(fail_callback_t *callback) {
 VOID _assert_remove_fail_callback(fail_callback_t *callback) {
     _node_t *node = fail_callback_queue;
     do {
-        if(node->data == callback) {
+        if (node->data == callback) {
             _node_remove(node);
             _node_release(node);
             fail_callback_queue_count--;
             break;
         }
         node = _node_next(node);
-    } while(node != fail_callback_queue);
-    if(fail_callback_queue_count == 0) {
+    } while (node != fail_callback_queue);
+    if (fail_callback_queue_count == 0) {
         fail_callback_queue = NULL;
     }
 
@@ -283,7 +284,7 @@ VOID _assert_uint_not_equal(CHAR *expected_name, UINT expected, CHAR *actual_nam
     }
 }
 
-VOID _assert_int_equal(CHAR *expected_name, INT expected, CHAR*actual_name, INT actual, CHAR *file, UINT line, CHAR *message, ...) {
+VOID _assert_int_equal(CHAR *expected_name, INT expected, CHAR *actual_name, INT actual, CHAR *file, UINT line, CHAR *message, ...) {
     if (expected != actual) {
         va_list args;
         char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};

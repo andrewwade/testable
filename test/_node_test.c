@@ -2,7 +2,7 @@
 // Created by Andrew Wade on 7/1/18.
 //
 
-#include "testing.h"
+#include "testable.h"
 #include "../source/_node.h"
 #include <setjmp.h>
 #include <printf.h>
@@ -18,7 +18,7 @@ void copy_jmp(jmp_buf dest, jmp_buf src) {
 int asserts_failed = 0;
 int assert_fail_count = 0;
 void assert_failure(int code, char *message) {
-    printf("%s", message);
+    TEST_OUTPUT("%s", message);
     fflush(stdout);
     asserts_failed++;
 }
@@ -26,6 +26,7 @@ void assert_failure(int code, char *message) {
 void assert_failure_expected(void *user, int code, char *message) {
     asserts_failed++;
 }
+
 fail_callback_t expect_assert_fail = {NULL, assert_failure_expected};
 
 #define EXPECT_ASSERT_FAIL(call, message...)              \
@@ -41,6 +42,7 @@ _assert_remove_fail_callback(&expect_assert_fail);        \
 ASSERT_INT_EQ(assert_fail_count+1,asserts_failed, message)
 
 TEST(_node_initialize_check_for_null_node) {
+
     EXPECT_ASSERT_FAIL(_node_initialize(NULL, NULL), "_node_initialize did not check for NULL");
 }
 
@@ -79,7 +81,7 @@ TEST(_node_remove_check_for_null_node) {
 TEST(_node_remove_links_previous_to_next) {
     _node_t node, next, previous;
 
-    node.next     = &next;
+    node.next = &next;
     node.prev = &previous;
     _node_remove(&node);
 
@@ -104,10 +106,11 @@ TEST(_node_insert_check_for_null_nodes) {
 
 TEST_GROUP(node_test) {
     TEST_CASE(_node_initialize_allow_null_data);
-    TEST_CASE(_node_initialize_check_for_null_node);
+//    TEST_CASE(_node_initialize_check_for_null_node);
     TEST_CASE(_node_initialize_set_next_to_node);
     TEST_CASE(_node_initialize_set_previous_to_node);
     TEST_CASE(_node_initialize_set_data_to_data_arg);
     TEST_CASE(_node_remove_check_for_null_node);
-    TEST_CASE(_node_insert_check_for_null_nodes);
+//    TEST_CASE(_node_insert_check_for_null_nodes);
 }
+

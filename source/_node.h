@@ -5,7 +5,7 @@
 #ifndef TESTABLE_UTIL_H
 #define TESTABLE_UTIL_H
 
-#include "../include/portable.h"
+#include "platform.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +18,7 @@ extern "C" {
 
 typedef struct _node_t {
     void           *data;       /* user data */
-    struct _node_t *prev;   /* prev node in list */
+    struct _node_t *prev;       /* prev node in list */
     struct _node_t *next;       /* next node in list */
 } _node_t;
 

@@ -2,8 +2,8 @@
 // Created by Andrew Wade on 6/26/18.
 //
 
-#ifndef TESTABLE_PORTABLE_H
-#define TESTABLE_PORTABLE_H
+#ifndef TESTABLE_PLATFORM_H
+#define TESTABLE_PLATFORM_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,8 +65,8 @@ extern "C" {
 #endif
 
 /* test output macro */
-#ifndef TEST_CONSOLE
-#define TEST_CONSOLE(fmt, ...) printf(fmt, ##__VA_ARGS__)
+#ifndef TEST_OUTPUT
+#define TEST_OUTPUT(fmt, ...) printf(fmt, ##__VA_ARGS__)
 
 #define LOG_TEST_FAIL(test)
 #define LOG_TEST_PASS(test)

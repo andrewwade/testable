@@ -26,7 +26,7 @@ static VOID test_assert_fail_callback(void *user, int code, char *message) {
         node = _node_next(node);
     }
 
-    printf("%s", message);
+    TEST_OUTPUT("%s", message);
 }
 
 

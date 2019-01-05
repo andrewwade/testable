@@ -2,7 +2,7 @@
 // Created by Andrew Wade on 6/29/18.
 //
 
-#include "../include/assertable.h"
+#include "asserts.h"
 #include "_node.h"
 #include "_test.h"
 #include "_group.h"
@@ -12,7 +12,7 @@
 
 static void group_test_fail_callback(void *user, int code, char *message) {
     _group_t *group = user;
-    printf("Fail(%d)\n", code);
+    TEST_OUTPUT("Fail(%d)\n", code);
 }
 
 void _group_run_all(_group_t *group) {
@@ -37,7 +37,7 @@ void _group_run_all(_group_t *group) {
     /* run all tests */
     do {
         if (node == NULL) {
-            printf("Error: Test is NULL!\n");
+            TEST_OUTPUT("Error: Test is NULL!\n");
             break;
         }
 
@@ -49,9 +49,9 @@ void _group_run_all(_group_t *group) {
 
         /* set group fail point using jump */
         if (!setjmp(group_fail_point)) {
-            count = printf("Running Test: %s...", test->name);
+            count = TEST_OUTPUT("Running Test: %s...", test->name);
             while(count < OUTPUT_RESULT_ALIGNMENT) {
-                printf(".");
+                TEST_OUTPUT(".");
                 count++;
             }
 
@@ -71,7 +71,7 @@ void _group_run_all(_group_t *group) {
             }
             _group_add_pass(group, test);
 
-            printf("Pass\n");
+            TEST_OUTPUT("Pass\n");
 
         } else {
             _group_add_fail(group, test);
@@ -87,7 +87,7 @@ void _group_run_all(_group_t *group) {
     /* remove group fail point */
     _assert_pop_fail_point();
 
-    printf("Test Group Passed %d out of %d.\n", group->pass_count, group->test_count);
+    TEST_OUTPUT("Test suite '%s' passed %d out of %d.\n", group->name, group->pass_count, group->test_count);
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {

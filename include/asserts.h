@@ -2,11 +2,11 @@
 // Created by Andrew Wade on 6/29/18.
 //
 
-#ifndef TESTABLE_ASSERTABLE_H
-#define TESTABLE_ASSERTABLE_H
+#ifndef TESTABLE_ASSERTS_H
+#define TESTABLE_ASSERTS_H
 
 #include "../source/_assert.h"
-#include "portable.h"
+#include "platform.h"
 
 #ifdef __cplusplus
 extern "C" {

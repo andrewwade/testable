@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "testing.h"
+#include "testable.h"
 
 TEST_GROUP(node_test);
 

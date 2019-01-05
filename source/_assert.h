@@ -6,7 +6,7 @@
 #define TESTABLE_ASSERT_H
 
 
-#include "../include/portable.h"
+#include "platform.h"
 #include <setjmp.h>
 
 #ifdef __cplusplus

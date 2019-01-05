@@ -2,8 +2,8 @@
 // Created by Andrew Wade on 6/29/18.
 //
 
-#ifndef TESTABLE_GROUPABLE_H
-#define TESTABLE_GROUPABLE_H
+#ifndef TESTABLE_GROUPS_H
+#define TESTABLE_GROUPS_H
 
 #include "../source/_group.h"
 

@@ -128,8 +128,7 @@ extern "C" {
 COMPARE_ ## x ( COMPARE_ ## y) (())  \
 )
 
-#define COMPARE_foo(x) x
-#define COMPARE_bar(x) x
+
 #define COMPARE_void(x) x
 
 #define IS_COMPARABLE(x) IS_PAREN(CAT(COMPARE_, x) (()))
@@ -144,13 +143,6 @@ IIF(BITBAND(IS_COMPARABLE(x))(IS_COMPARABLE(y)) ) \
 
 #define IS_VOID(x) EQUAL(x, void)
 
-
-#define TVAL(type) \
-IF(IS_VOID(type)) (int x;, 4 + 3)
-
-void test() {
-    TVAL(void);
-}
 
 
 

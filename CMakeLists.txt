@@ -24,7 +24,7 @@ set(testable_source_files
         source/_output.c source/_pp.h)
 
 set(testable_test_files
-        test/_node_test.c test/_node_test.h source/_test.c source/_mock.c)
+        test/_node_test.c test/_node_test.h source/_test.c source/_mock.c source/macro_helpers.h include/mock.h source/_mock.h)
 
 
 

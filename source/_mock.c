@@ -27,20 +27,31 @@ void *_mock_call(_mock_t *mock, _mock_variable_t *args, int count) {
 }
 
 
+#include "mock.h"
+#include "test.h"
 
 
-_MOCK_CREATE_MOCK(int, test_function, int, a1, int, a2);
+_MOCK_CREATE_MOCK(int, my_test_func, int, a);
 _MOCK_CREATE_MOCK(void, test_void_function, char*, s);
 
+int my_override(int a) {
+    printf("Called with: %d", a);
+}
 
 void my_test() {
-    EXPECT_CALL(test_function).WITH_ARGS(3, 2).RETURNS(3);
-    EXPECT_CALL(test_function).WITH_ARGS(3, 2).TIMES(3);
-
-    test_function(1, 2);
+    int x = 5;
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).OVERRIDE(my_override);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).RETURNS(3);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).TIMES(3);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).TIMES(3);
+    _MOCK_NAME(my_test_func).return_value.address = & x;
+    int resp = test_my_test_func(3);
+    test_void_function("hello");
+    printf("resp=%d", resp);
 }
 
 
 int main() {
     my_test();
+    return 0;
 }

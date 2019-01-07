@@ -50,10 +50,10 @@ extern "C" {
 #define _PAIR_ARGS6(a, b, c, d, e, f) a b, c d, e f
 
 #define _PAIR_OVERRIDE(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
-#define PAIR_ARGS(...) _PAIR_OVERRIDE(__VA_ARGS__, _PAIR_ARGS6,_DO_NOTHING,_PAIR_ARGS4,_DO_NOTHING, _PAIR_ARGS2)(__VA_ARGS__)
+#define LIST_PAIRS(...) _PAIR_OVERRIDE(__VA_ARGS__, _PAIR_ARGS6,_DO_NOTHING,_PAIR_ARGS4,_DO_NOTHING, _PAIR_ARGS2)(__VA_ARGS__)
 
-#define COMMA ,
-#define SEMICOL ;
+#define COMMA() ;
+#define SEMICOL() ;
 
 
 #define _JOIN_ARGS1(s, a)                   a
@@ -71,27 +71,28 @@ extern "C" {
 #define _INIT_VAR1(name, value) {#name, value}
 #define _INIT_VAR2(name, value, ...) {$name, value}
 
-#define _LIST_FOREACH1_1(macro, ...) macro(__VA_ARGS__)
-#define _LIST_FOREACH1_2(macro, ...) macro(__VA_ARGS__) _LIST_FOREACH_1(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_3(macro, ...) macro(arg) _LIST_FOREACH_2(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_4(macro, ...) macro(arg) _LIST_FOREACH_3(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_5(macro, ...) macro(arg) _LIST_FOREACH_4(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_6(macro, ...) macro(arg) _LIST_FOREACH_5(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_7(macro, ...) macro(arg) _LIST_FOREACH_6(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_8(macro, ...) macro(arg) _LIST_FOREACH_7(macro, __VA_ARGS__)
-#define _LIST_FOREACH1_9(macro, ...) macro(arg) _LIST_FOREACH_8(macro, __VA_ARGS__)
+#define _MAP_1(macro, ...) macro(__VA_ARGS__)
+#define _MAP_2(macro, ...) macro(__VA_ARGS__) _LIST_FOREACH_1(macro, __VA_ARGS__)
+#define _MAP_3(macro, ...) macro(arg) _LIST_FOREACH_2(macro, __VA_ARGS__)
+#define _MAP_4(macro, ...) macro(arg) _LIST_FOREACH_3(macro, __VA_ARGS__)
+#define _MAP_5(macro, ...) macro(arg) _LIST_FOREACH_4(macro, __VA_ARGS__)
+#define _MAP_6(macro, ...) macro(arg) _LIST_FOREACH_5(macro, __VA_ARGS__)
+#define _MAP_7(macro, ...) macro(arg) _LIST_FOREACH_6(macro, __VA_ARGS__)
+#define _MAP_8(macro, ...) macro(arg) _LIST_FOREACH_7(macro, __VA_ARGS__)
+#define _MAP_9(macro, ...) macro(arg) _LIST_FOREACH_8(macro, __VA_ARGS__)
 
-#define _LIST_FOREACH2_2(macro, a, b, ...) macro(a, b)
-#define _LIST_FOREACH2_4(macro, a, b, ...) _LIST_FOREACH2_2(macro, a, b), _LIST_FOREACH2_2(macro, __VA_ARGS__)
-#define _LIST_FOREACH2_6(macro, a, b, ...) _LIST_FOREACH2_2(macro, a, b), _LIST_FOREACH2_4(macro, __VA_ARGS__)
-#define _LIST_FOREACH2_8(macro, a, b, ...) _LIST_FOREACH2_2(macro, a, b), _LIST_FOREACH2_6(macro, __VA_ARGS__)
-#define _LIST_FOREACH2_10(macro, a, b, ...) _LIST_FOREACH2_2(macro, a, b), _LIST_FOREACH2_8(macro, __VA_ARGS__)
+#define _MAP_PAIRS_2(macro, sep, a, b, ...) macro(a, b)
+#define _MAP_PAIRS_4(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_2(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_6(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_4(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_8(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_6(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_10(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_8(macro, sep, __VA_ARGS__)
 
-#define LIST_FOREACH1(macro, ...) _GET_NTH_ARG(__VA_ARGS__, _LIST_FOREACH1_9, _LIST_FOREACH1_8, _LIST_FOREACH1_7, _LIST_FOREACH1_6, _LIST_FOREACH1_5, _LIST_FOREACH1_4, _LIST_FOREACH1_3, _LIST_FOREACH1_2, _LIST_FOREACH1_1, _DO_NOTHING)(macro, ##__VA_ARGS__)
+#define MAP(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_9, _MAP_8, _MAP_7, _MAP_6, _MAP_5, _MAP_4, _MAP_3, _MAP_2, _MAP_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
-#define LIST_FOREACH2(macro, ...) _GET_NTH_ARG(__VA_ARGS__, _LIST_FOREACH2_10, _LIST_FOREACH2_10, _LIST_FOREACH2_8, _LIST_FOREACH2_8, _LIST_FOREACH2_6, _LIST_FOREACH2_6, _LIST_FOREACH2_4, _LIST_FOREACH2_4, _LIST_FOREACH2_2, _LIST_FOREACH2_2, _DO_NOTHING, _DO_NOTHING)(macro, ##__VA_ARGS__)
+#define MAP_PAIRS(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_PAIRS_10, _MAP_PAIRS_10, _MAP_PAIRS_8, _MAP_PAIRS_8, _MAP_PAIRS_6, _MAP_PAIRS_6, _MAP_PAIRS_4, _MAP_PAIRS_4, _MAP_PAIRS_2, _MAP_PAIRS_2, _DO_NOTHING, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
 
+   
 #define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
 #define PRIMITIVE_CAT(a, ...) a ## __VA_ARGS__
 #define IIF(c) PRIMITIVE_CAT(IIF_, c)
@@ -141,7 +142,7 @@ IIF(BITBAND(IS_COMPARABLE(x))(IS_COMPARABLE(y)) ) \
 
 #define EQUAL(x, y) COMPL(NOT_EQUAL(x, y))
 
-#define IS_VOID(x) EQUAL(x, void)
+#define TYPE_IS_VOID(x) EQUAL(x, void)
 
 
 

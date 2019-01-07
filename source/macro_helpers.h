@@ -75,13 +75,15 @@ extern "C" {
 /**
  * Macros which expand to common values
  */
+#define EAT(...)
 #define PASS(...) __VA_ARGS__
 #define EMPTY()
 #define COMMA() ,
 #define PLUS() +
 #define ZERO() 0
 #define ONE() 1
-
+#define SEMICOLON() ;
+#define COLON() :
 /**
  * Causes a function-style macro to require an additional pass to be expanded.
  *
@@ -133,6 +135,13 @@ extern "C" {
 #define CAT3(a, b, ...) a ## b ## __VA_ARGS__
 
 
+
+#define COUNT(...) _COUNT("ignored", ##__VA_ARGS__, \
+  32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, \
+  16, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0)
+
+#define _COUNT( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,_13,_14,_15,_16,\
+_17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, N, ...) N
 /**
  * Get the first argument and ignore the rest.
  */
@@ -155,6 +164,11 @@ extern "C" {
 #define IS_PROBE(...) SECOND(__VA_ARGS__, 0)
 #define PROBE() ~, 1
 
+#define CHECK_N(x, n, ...) n
+#define CHECK(...) CHECK_N(__VA_ARGS__, 0,)
+
+#define IS_PAREN(x) CHECK(IS_PAREN_PROBE x)
+#define IS_PAREN_PROBE(...) PROBE()
 
 /**
  * Logical negation. 0 is defined as false and everything else as true.
@@ -176,7 +190,7 @@ extern "C" {
 /**
  * Logical OR. Simply performs a lookup.
  */
-#define OR(a,b) CAT3(_OR_, a, b)
+#define OR(a, b) CAT3(_OR_, a, b)
 #define _OR_00 0
 #define _OR_01 1
 #define _OR_10 1
@@ -185,7 +199,7 @@ extern "C" {
 /**
  * Logical AND. Simply performs a lookup.
  */
-#define AND(a,b) CAT3(_AND_, a, b)
+#define AND(a, b) CAT3(_AND_, a, b)
 #define _AND_00 0
 #define _AND_01 0
 #define _AND_10 0
@@ -224,8 +238,8 @@ extern "C" {
  */
 #define IF_ELSE(c) _IF_ELSE(BOOL(c))
 #define _IF_ELSE(c) CAT(_IF_ELSE_,c)
-#define _IF_ELSE_0(t,f) f
-#define _IF_ELSE_1(t,f) t
+#define _IF_ELSE_0(t, f) f
+#define _IF_ELSE_1(t, f) t
 
 
 /**
@@ -249,10 +263,14 @@ extern "C" {
  * 4. BOOL is used to force non-zero results into 1 giving the clean 0 or 1
  *    output required.
  */
-#define HAS_ARGS(...) BOOL(FIRST(_END_OF_ARGUMENTS_ __VA_ARGS__)(0))
+//#define HAS_ARGS(...) BOOL(FIRST(_END_OF_ARGUMENTS_ __VA_ARGS__)(0))
 #define _END_OF_ARGUMENTS_(...) BOOL(FIRST(__VA_ARGS__))
 
+#define HAS_ARGS(...) BOOL(COUNT(__VA_ARGS__))
 
+int test() {
+  int x = IF_ELSE(HAS_ARGS())(3, 4);
+}
 /**
  * Macro map/list comprehension. Usage:
  *
@@ -319,7 +337,7 @@ extern "C" {
  */
 #define MAP(...) \
    IF(HAS_ARGS(__VA_ARGS__))(EVAL(MAP_INNER(__VA_ARGS__)))
-#define MAP_INNER(op,sep,cur_val, ...) \
+#define MAP_INNER(op, sep, cur_val, ...) \
   op(cur_val) \
   IF(HAS_ARGS(__VA_ARGS__))( \
     sep() DEFER2(_MAP_INNER)()(op, sep, ##__VA_ARGS__) \
@@ -349,9 +367,9 @@ extern "C" {
  *
  * The mechanism is analogous to the MAP macro.
  */
-#define MAP_WITH_ID(op,sep,...) \
+#define MAP_WITH_ID(op, sep, ...) \
   IF(HAS_ARGS(__VA_ARGS__))(EVAL(MAP_WITH_ID_INNER(op,sep,I, ##__VA_ARGS__)))
-#define MAP_WITH_ID_INNER(op,sep,id,cur_val, ...) \
+#define MAP_WITH_ID_INNER(op, sep, id, cur_val, ...) \
   op(cur_val,id) \
   IF(HAS_ARGS(__VA_ARGS__))( \
     sep() DEFER2(_MAP_WITH_ID_INNER)()(op, sep, CAT(id,I), ##__VA_ARGS__) \
@@ -379,9 +397,9 @@ extern "C" {
  *
  * The mechanism is analogous to the MAP macro.
  */
-#define MAP_PAIRS(op,sep,...) \
+#define MAP_PAIRS(op, sep, ...) \
   IF(HAS_ARGS(__VA_ARGS__))(EVAL(MAP_PAIRS_INNER(op,sep,__VA_ARGS__)))
-#define MAP_PAIRS_INNER(op,sep,cur_val_1, cur_val_2, ...) \
+#define MAP_PAIRS_INNER(op, sep, cur_val_1, cur_val_2, ...) \
   op(cur_val_1,cur_val_2) \
   IF(HAS_ARGS(__VA_ARGS__))( \
     sep() DEFER2(_MAP_PAIRS_INNER)()(op, sep, __VA_ARGS__) \
@@ -413,9 +431,9 @@ extern "C" {
  *
  * The mechanism is analogous to the MAP macro.
  */
-#define MAP_SLIDE(op,last_op,sep,...) \
+#define MAP_SLIDE(op, last_op, sep, ...) \
   IF(HAS_ARGS(__VA_ARGS__))(EVAL(MAP_SLIDE_INNER(op,last_op,sep,__VA_ARGS__)))
-#define MAP_SLIDE_INNER(op,last_op,sep,cur_val, ...) \
+#define MAP_SLIDE_INNER(op, last_op, sep, cur_val, ...) \
   IF(HAS_ARGS(__VA_ARGS__))(op(cur_val,FIRST(__VA_ARGS__))) \
   IF(NOT(HAS_ARGS(__VA_ARGS__)))(last_op(cur_val)) \
   IF(HAS_ARGS(__VA_ARGS__))( \
@@ -428,8 +446,38 @@ extern "C" {
  * Strip any excess commas from a set of arguments.
  */
 #define REMOVE_TRAILING_COMMAS(...) \
-	MAP(PASS, COMMA, __VA_ARGS__)
+    MAP(PASS, COMMA, __VA_ARGS__)
 
+/**
+ * List arguments in pairs
+ */
+#define LIST_PAIRS(...) MAP_PAIRS(_PAIR, COMMA, ##__VA_ARGS__)
+#define _PAIR(type, name) type name
+
+/**
+ * Compare if two tokens match by using the "painted blue" technique
+ */
+#define PRIMITIVE_COMPARE(x, y) IS_PAREN \
+( \
+COMPARE_ ## x ( COMPARE_ ## y) (())  \
+)
+
+/**
+ * List comparable options
+ */
+#define COMPARE_void(x) x
+
+#define IS_COMPARABLE(x) IS_PAREN(CAT(COMPARE_, x) (()))
+#define NOT_EQUAL(x, y) \
+IF_ELSE(AND(IS_COMPARABLE(x), IS_COMPARABLE(y))) \
+( \
+   PRIMITIVE_COMPARE, \
+   1 EAT \
+)(x, y)
+
+#define EQUAL(x, y) NOT(NOT_EQUAL(x, y))
+
+#define TYPE_IS_VOID(x) EQUAL(x, void)
 
 #ifdef __cplusplus
 };

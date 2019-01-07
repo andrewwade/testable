@@ -15,10 +15,6 @@ extern "C" {
 
 #define EXPECT_CALL(function_name) _MOCK_EXPECT_CALL(function_name)
 
-int test(int x);
-
-CREATE_MOCK(int, test, int, x);
-
 #ifdef __cplusplus
 };
 #endif

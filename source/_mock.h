@@ -69,14 +69,20 @@ _mock_t _MOCK_NAME(fname) = {                                                   
     .actual_count = 0,                                                                                              \
     .name = #fname,                                                                                                 \
     .return_value = DEFINE_MOCK_VALUE(return_type),                                                                 \
-    .arguments_count = COUNT(LIST_PAIRS(args)),                                                                     \
-    .arguments = {MAP_PAIRS(DEFINE_MOCK_VARIABLE, COMMA, args)},                                                    \
+    .arguments_count = IF_ELSE(HAS_ARGS(args))(COUNT(LIST_PAIRS(args)), 0),                                                                     \
+    .arguments = {IF(HAS_ARGS(args))(MAP_PAIRS(DEFINE_MOCK_VARIABLE, COMMA, args))},                                                    \
 };                                                                                                                  \
                                                                                                                     \
 /* function definition */                                                                                           \
 return_type fname(LIST_PAIRS(args)) {                                                                               \
-    _mock_variable_t with_args[] = {MAP_PAIRS(INIT_MOCK_VARIABLE, COMMA, args)};                                    \
-    void *return_value_ptr = _mock_call(&_MOCK_NAME(fname), with_args, COUNT(LIST_PAIRS(args)));                    \
+                                                                                                                    \
+    IF(HAS_ARGS(args)) (                                                                                            \
+        _mock_variable_t with_args[] = {MAP_PAIRS(INIT_MOCK_VARIABLE, COMMA, args)};                                \
+        void *return_value_ptr = _mock_call(&_MOCK_NAME(fname), with_args, COUNT(LIST_PAIRS(args)));                \
+    )                                                                                                               \
+    IF(HAS_NO_ARGS(args)) (                                                                                         \
+        void *return_value_ptr = _mock_call(&_MOCK_NAME(fname), NULL, 0);                                           \
+    )                                                                                                               \
     IF(NOT(TYPE_IS_VOID(return_type))) (                                                                            \
         /* non void function must return something */                                                               \
         if(return_value_ptr == NULL && _MOCK_NAME(fname).return_value.address != NULL) {                            \
@@ -95,7 +101,9 @@ typedef struct _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_TYPE(fname);   
 struct _MOCK_CALL_BUILDER_TYPE(fname) {                                                                             \
     const _MOCK_CALL_BUILDER_TYPE(fname) (* const OVERRIDE)(return_type (*override)(LIST_PAIRS(args)));             \
     const _MOCK_CALL_BUILDER_TYPE(fname) (* const TIMES)(int count);                                                \
-    const _MOCK_CALL_BUILDER_TYPE(fname) (* const WITH_ARGS)(LIST_PAIRS(args));                                     \
+    IF(HAS_ARGS(args)) (                                                                                            \
+        const _MOCK_CALL_BUILDER_TYPE(fname) (* const WITH_ARGS)(LIST_PAIRS(args));                                 \
+    )                                                                                                               \
     IF(NOT(TYPE_IS_VOID(return_type)))(                                                                             \
         const _MOCK_CALL_BUILDER_TYPE(fname) (* const RETURNS)(return_type);                                        \
     )                                                                                                               \
@@ -108,8 +116,10 @@ _MOCK_CALL_BUILDER_FUNC(fname, set_override)(return_type (*callback)(LIST_PAIRS(
 static const _MOCK_CALL_BUILDER_TYPE(fname)                                                                         \
 _MOCK_CALL_BUILDER_FUNC(fname, call_times)(int count);                                                              \
                                                                                                                     \
-static const _MOCK_CALL_BUILDER_TYPE(fname)                                                                         \
-_MOCK_CALL_BUILDER_FUNC(fname,call_with_args)(LIST_PAIRS(args));                                                    \
+IF(HAS_ARGS(args)) (                                                                                                \
+    static const _MOCK_CALL_BUILDER_TYPE(fname)                                                                     \
+    _MOCK_CALL_BUILDER_FUNC(fname,call_with_args)(LIST_PAIRS(args));                                                \
+)                                                                                                                   \
                                                                                                                     \
 IF(NOT(TYPE_IS_VOID(return_type))) (                                                                                \
     static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_FUNC(fname,call_returns)(return_type);           \
@@ -119,7 +129,9 @@ IF(NOT(TYPE_IS_VOID(return_type))) (                                            
 static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER(fname) = {                                           \
     _MOCK_CALL_BUILDER_FUNC(fname, set_override),                                                                   \
     _MOCK_CALL_BUILDER_FUNC(fname, call_times),                                                                     \
-    _MOCK_CALL_BUILDER_FUNC(fname, call_with_args),                                                                 \
+    IF(HAS_ARGS(args)) (                                                                                            \
+        _MOCK_CALL_BUILDER_FUNC(fname, call_with_args),                                                             \
+    )                                                                                                               \
     IF(NOT(TYPE_IS_VOID(return_type)))(                                                                             \
         _MOCK_CALL_BUILDER_FUNC(fname, call_returns)                                                                \
     )                                                                                                               \
@@ -139,9 +151,11 @@ static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_FUNC(fname, call_
     return _MOCK_CALL_BUILDER(fname);                                                                               \
 }                                                                                                                   \
                                                                                                                     \
-static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_FUNC(fname, call_with_args)(LIST_PAIRS(args)) {      \
-    return _MOCK_CALL_BUILDER(fname);                                                                               \
-}                                                                                                                   \
+IF(HAS_ARGS(args)) (                                                                                                \
+    static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_FUNC(fname, call_with_args)(LIST_PAIRS(args)) {  \
+        return _MOCK_CALL_BUILDER(fname);                                                                           \
+    }                                                                                                               \
+)                                                                                                                   \
                                                                                                                     \
 IF(NOT(TYPE_IS_VOID(return_type)))(                                                                                 \
     static const _MOCK_CALL_BUILDER_TYPE(fname) _MOCK_CALL_BUILDER_FUNC(fname, call_returns)(return_type value) {   \

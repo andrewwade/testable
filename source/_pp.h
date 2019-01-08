@@ -9,9 +9,9 @@
 extern "C" {
 #endif
 #define _DO_NOTHING(...)
-#define _GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
+#define _GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,  N, ...) N
 
-#define COUNT(...) _GET_NTH_ARG("ignored", ##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define COUNT(...) _GET_NTH_ARG("ignored", ##__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
 #define _CONCAT2(a, b) a b
 #define _CONCAT3(a, b, c) a b c
@@ -45,31 +45,19 @@ extern "C" {
 #define _EVEN_OVERRIDE(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
 #define EVEN_ARGS(...) _EVEN_OVERRIDE(__VA_ARGS__, _EVEN_ARGS6, _EVEN_ARGS5, _EVEN_ARGS4, _EVEN_ARGS3, _EVEN_ARGS2, _EVEN_ARGS1)(__VA_ARGS__)
 
+#define _PAIR_ARGS1(a) a
 #define _PAIR_ARGS2(a, b) a b
 #define _PAIR_ARGS4(a, b, c, d) a b, c d
 #define _PAIR_ARGS6(a, b, c, d, e, f) a b, c d, e f
 
 #define _PAIR_OVERRIDE(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
-#define LIST_PAIRS(...) _PAIR_OVERRIDE(__VA_ARGS__, _PAIR_ARGS6,_DO_NOTHING,_PAIR_ARGS4,_DO_NOTHING, _PAIR_ARGS2)(__VA_ARGS__)
+#define LIST_PAIRS(...) _PAIR_OVERRIDE(__VA_ARGS__, _PAIR_ARGS6,_DO_NOTHING,_PAIR_ARGS4,_DO_NOTHING, _PAIR_ARGS2, _DO_NOTHING)(__VA_ARGS__)
 
-#define COMMA() ;
+#define COMMA() ,
 #define SEMICOL() ;
+#define PASS(...) __VA_ARGS__
+#define EAT(...)
 
-
-#define _JOIN_ARGS1(s, a)                   a
-#define _JOIN_ARGS2(s, a, b)                a s b
-#define _JOIN_ARGS3(s, a, b, c)             a s b s c
-#define _JOIN_ARGS4(s, a, b, c, d)          a s b s c s d
-#define _JOIN_ARGS5(s, a, b, c, d, e)       a s b s c s d s e
-#define _JOIN_ARGS6(s, a, b, c, d, e, f)    a s b s c s d s e f
-
-#define _JOIN_OVERRIDE(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
-#define JOIN_ARGS(separator, ...) _JOIN_OVERRIDE(__VA_ARGS__, _JOIN_ARGS6, _JOIN_ARGS5, _JOIN_ARGS4, _JOIN_ARGS3, _JOIN_ARGS2, _JOIN_ARGS1, _DO_NOTHING)(separator, __VA_ARGS__)
-
-#define DEF_ARGS(...) JOIN_ARGS(SEMICOL, __VA_ARGS__)
-
-#define _INIT_VAR1(name, value) {#name, value}
-#define _INIT_VAR2(name, value, ...) {$name, value}
 
 #define _MAP_1(macro, ...) macro(__VA_ARGS__)
 #define _MAP_2(macro, ...) macro(__VA_ARGS__) _LIST_FOREACH_1(macro, __VA_ARGS__)
@@ -81,6 +69,8 @@ extern "C" {
 #define _MAP_8(macro, ...) macro(arg) _LIST_FOREACH_7(macro, __VA_ARGS__)
 #define _MAP_9(macro, ...) macro(arg) _LIST_FOREACH_8(macro, __VA_ARGS__)
 
+#define _MAP_PAIRS_0(macro, sep)
+#define _MAP_PAIRS_1(macro, sep, a, ...) a
 #define _MAP_PAIRS_2(macro, sep, a, b, ...) macro(a, b)
 #define _MAP_PAIRS_4(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_2(macro, sep, __VA_ARGS__)
 #define _MAP_PAIRS_6(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_4(macro, sep, __VA_ARGS__)
@@ -89,23 +79,35 @@ extern "C" {
 
 #define MAP(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_9, _MAP_8, _MAP_7, _MAP_6, _MAP_5, _MAP_4, _MAP_3, _MAP_2, _MAP_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
-#define MAP_PAIRS(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_PAIRS_10, _MAP_PAIRS_10, _MAP_PAIRS_8, _MAP_PAIRS_8, _MAP_PAIRS_6, _MAP_PAIRS_6, _MAP_PAIRS_4, _MAP_PAIRS_4, _MAP_PAIRS_2, _MAP_PAIRS_2, _DO_NOTHING, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
+#define MAP_PAIRS(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_PAIRS_10, EAT, _MAP_PAIRS_8, EAT, _MAP_PAIRS_6, EAT, _MAP_PAIRS_4, EAT, _MAP_PAIRS_2, _MAP_PAIRS_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
 
-   
+#define CAT3(a, b, c) a ## b ## c
 #define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
 #define PRIMITIVE_CAT(a, ...) a ## __VA_ARGS__
-#define IIF(c) PRIMITIVE_CAT(IIF_, c)
-#define IIF_0(t, ...) __VA_ARGS__
-#define IIF_1(t, ...) t
+#define IF_ELSE(c) PRIMITIVE_CAT(_IF_ELSE_, c)
+#define _IF_ELSE_0(t, ...) __VA_ARGS__
+#define _IF_ELSE_1(t, ...) t
 
 #define COMPL(b) PRIMITIVE_CAT(COMPL_, b)
 #define COMPL_0 1
 #define COMPL_1 0
 
-#define BITBAND(x) PRIMITIVE_CAT(BITBAND_, x)
-#define BITBAND_0(y) 0
-#define BITBAND_1(y) y
+#define BITAND(x) PRIMITIVE_CAT(BITAND_, x)
+#define BITAND_0(y) 0
+#define BITAND_1(y) y
+
+#define AND(a, b) CAT3(_AND_, a, b)
+#define _AND_00   0
+#define _AND_01   0
+#define _AND_10   0
+#define _AND_11   1
+
+#define OR(a, b) CAT3(_OR_, a, b)
+#define _OR_00 0
+#define _OR_01 1
+#define _OR_10 1
+#define _OR_11 1
 
 #define CHECK_N(x, n, ...) n
 #define CHECK(...) CHECK_N(__VA_ARGS__, 0,)
@@ -118,11 +120,16 @@ extern "C" {
 #define NOT_0 PROBE(~)
 
 #define BOOL(x) COMPL(NOT(x))
-#define IF(c) IIF(BOOL(c))
+
+#define IF(c) _IF(BOOL(c))
+#define _IF(c) PRIMITIVE_CAT(_IF_,c)
+#define _IF_0(...)
+#define _IF_1(...) __VA_ARGS__
 
 #define EAT(...)
 #define EXPAND(...) __VA_ARGS__
 #define WHEN(c) IF(c)(EXPAND, EAT)
+#define FIRST(a, ...) a
 
 #define PRIMITIVE_COMPARE(x, y) IS_PAREN \
 ( \
@@ -131,10 +138,11 @@ COMPARE_ ## x ( COMPARE_ ## y) (())  \
 
 
 #define COMPARE_void(x) x
+#define COMPARE_1(x) x
 
 #define IS_COMPARABLE(x) IS_PAREN(CAT(COMPARE_, x) (()))
 #define NOT_EQUAL(x, y) \
-IIF(BITBAND(IS_COMPARABLE(x))(IS_COMPARABLE(y)) ) \
+IF_ELSE(BITAND(IS_COMPARABLE(x))(IS_COMPARABLE(y)) ) \
 ( \
    PRIMITIVE_COMPARE, \
    1 EAT \
@@ -145,8 +153,10 @@ IIF(BITBAND(IS_COMPARABLE(x))(IS_COMPARABLE(y)) ) \
 #define TYPE_IS_VOID(x) EQUAL(x, void)
 
 
+#define HAS_NO_ARGS(...) OR(NOT(COUNT(__VA_ARGS__)), \
+AND(EQUAL(COUNT(__VA_ARGS__), 1), TYPE_IS_VOID(FIRST(__VA_ARGS__))))
 
-
+#define HAS_ARGS(...) NOT(HAS_NO_ARGS(__VA_ARGS__))
 
 #ifdef __cplusplus
 };

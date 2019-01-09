@@ -130,7 +130,7 @@ extern "C" {
 #define EXPAND(...) __VA_ARGS__
 #define WHEN(c) IF(c)(EXPAND, EAT)
 #define FIRST(a, ...) a
-
+#define SECOND(a, b, ...) b
 #define PRIMITIVE_COMPARE(x, y) IS_PAREN \
 ( \
 COMPARE_ ## x ( COMPARE_ ## y) (())  \

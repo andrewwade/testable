@@ -2,10 +2,10 @@
 // Created by Andrew Wade on 6/29/18.
 //
 
-#ifndef TESTABLE_TESTABLE_H
-#define TESTABLE_TESTABLE_H
+#ifndef TESTABLE_TESTS_H
+#define TESTABLE_TESTS_H
 
-#include "../source/_test.h"
+#include "../src/_test.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
-#ifndef TESTABLE_LIBRARY_H
-#define TESTABLE_LIBRARY_H
+#ifndef TESTABLE_TESTABLE_H
+#define TESTABLE_TESTABLE_H
 
 
 #ifdef __cplusplus

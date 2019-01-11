@@ -7,22 +7,32 @@
 
 
 
-#define MOCK_FUNCTION(ret, func, args...) \
-ret mock_##func(##args);        \
-struct {                        \
-    int called;                 \
-ret (*call)(##args);            \
-} mock = {mock_##func};         \
-ret func(##args) {              \
-    mock.called++;              \
-    return mock.call(a1,a2);    \
-};                              \
-ret mock_##func(##args)
+#include "mockable.h"
+#include "test.h"
 
 
-//
-//int main() {
-//
-//    RUN_TEST_GROUP(node_test);
-//    RUN_TEST(_node_initialize_allow_null_data);
-//}
+CREATE_MOCK(int, my_test_func, int, a);
+CREATE_MOCK(void, test_void_function);
+CREATE_MOCK(int, test, void);
+
+void my_override(int a) {
+    printf("Called with: %d", a);
+}
+
+void my_test() {
+    int x                                             = 5;
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).CALLBACK(my_override);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).RETURNS(3);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).TIMES(3);
+    EXPECT_CALL(test_void_function).TIMES(3);
+
+    int resp = test_my_test_func(3);
+    test_void_function();
+    printf("resp=%d", resp);
+}
+
+
+int main() {
+    my_test();
+    return 0;
+}

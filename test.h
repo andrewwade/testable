@@ -2,8 +2,8 @@
 // Created by Andrew Wade on 2019-01-06.
 //
 
-#ifndef TESTABLE_TEST_H
-#define TESTABLE_TEST_H
+#ifndef TESTABLE_DUMMY_TEST_H
+#define TESTABLE_DUMMY_TEST_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ int test_my_test_func(int val);
 };
 #endif
 
-#endif //TESTABLE_TEST_H
+#endif //TESTABLE_DUMMY_TEST_H

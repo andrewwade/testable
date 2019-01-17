@@ -5,7 +5,7 @@
 #ifndef TESTABLE_GROUPS_H
 #define TESTABLE_GROUPS_H
 
-#include "../src/_group.h"
+#include "../source/_group.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "../src/_mock.h"
+#include "../source/_mock.h"
 
 #define CREATE_MOCK_VALUE(type, name) _mock_value_t _mock_##name = _MOCK_VALUE(type)
 

@@ -5,7 +5,7 @@
 #ifndef TESTABLE_ASSERTS_H
 #define TESTABLE_ASSERTS_H
 
-#include "../src/_assert.h"
+#include "../source/_assert.h"
 #include "platform.h"
 
 #ifdef __cplusplus

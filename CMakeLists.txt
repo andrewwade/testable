@@ -11,20 +11,20 @@ set(testable_include_files
         include/tests.h
         include/testable.h)
 set(testable_source_files
-        src/_assert.c
-        src/_assert.h
-        src/_group.c
-        src/_group.h
-        src/_node.c
-        src/_node.h
-        src/_pool.c
-        src/_pool.h
-        src/_test.h
-        src/_output.h
-        src/_output.c src/_pp.h)
+        source/_assert.c
+        source/_assert.h
+        source/_group.c
+        source/_group.h
+        source/_node.c
+        source/_node.h
+        source/_pool.c
+        source/_pool.h
+        source/_test.h
+        source/_output.h
+        source/_output.c source/_pp.h)
 
 set(testable_test_files
-        test/_node_test.c test/_node_test.h src/_test.c src/_mock.c extern/macro_helpers.h include/mockable.h src/_mock.h test.h test.c src/_mock_call.h src/_mock_call.c)
+        test/_node_test.c test/_node_test.h source/_test.c source/_mock.c extern/macro_helpers.h include/mockable.h source/_mock.h test.h test.c source/_mock_call.h source/_mock_call.c)
 
 
 

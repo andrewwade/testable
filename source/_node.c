@@ -115,11 +115,11 @@ void *_node_find_match(_node_t *head, _node_matcher_t matcher, void *data) {
     _node_t *return_ptr = NULL;
     if(head != NULL) {
         do {
-            if (matcher(curr->data, data)) {
+            if (matcher(curr->data, data) == 0) {
                 return_ptr = curr->data;
             }
             curr = curr->next;
-        } while (curr != head);
+        } while (curr != head && return_ptr == NULL);
     }
 
     return return_ptr;

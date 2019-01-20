@@ -27,19 +27,20 @@ CREATE_MOCK(void, test_void_function);
 CREATE_MOCK(int, test, void);
 
 void my_override(int a) {
-    printf("Called with: %d", a);
+    printf("\nCalled with: %d\n", a);
 }
 
 void my_test() {
     int x                                             = 5;
-    EXPECT_CALL(my_test_func).WITH_ARGS(3).CALLBACK(my_override);
+    EXPECT_CALL(my_test_func).WITH_ARGS(3).CALLBACK(my_override).RETURNS(3);
     EXPECT_CALL(my_test_func).WITH_ARGS(3).RETURNS(3);
     EXPECT_CALL(my_test_func).WITH_ARGS(3).TIMES(3);
     EXPECT_CALL(test_void_function).TIMES(3);
 
+    printf("Calling test function(3)\n\t");
     int resp = test_my_test_func(3);
+    printf("\tResponse=%d\n\n", resp);
     test_void_function();
-    printf("resp=%d", resp);
 }
 
 

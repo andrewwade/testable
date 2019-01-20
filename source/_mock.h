@@ -65,11 +65,13 @@ return_type fname(LIST_PAIRS(args)) {                                           
     )                                                                                                               \
     IF(NOT(TYPE_IS_VOID(return_type))) (                                                                            \
         /* non void function must return something */                                                               \
-        if(return_value_ptr == NULL && _MOCK_GET_MOCK(fname).return_value.address != NULL) {                        \
-            /* use default function return value */                                                                 \
-            return_value_ptr = _MOCK_GET_MOCK(fname).return_value.address;                                          \
-        } else {                                                                                                    \
-            printf("Fail: No Return Value\n");                                                                      \
+        if(return_value_ptr == NULL) {                                                                              \
+            if(_MOCK_GET_MOCK(fname).return_value.address != NULL) {                                                \
+                /* use default function return value */                                                             \
+                return_value_ptr = _MOCK_GET_MOCK(fname).return_value.address;                                      \
+            } else {                                                                                                \
+                printf("Fail: No Return Value\n");                                                                  \
+            }                                                                                                       \
         }                                                                                                           \
         /* cast to return type and dereference */                                                                   \
         return *(return_type*)return_value_ptr;                                                                     \

@@ -26,6 +26,7 @@ void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args) {
             received_call = _mock_call_create(mock->return_value, args, mock->argc);
         } else {
             received_call = _mock_call_create(expected_call->return_value, args, mock->argc);
+            received_call->callback = expected_call->callback;
         }
     }
 
@@ -51,6 +52,7 @@ void _mock_expect_call(_mock_t *mock) {
     } else {
         _node_append(mock->expected_calls, new_expected_call);
     }
+    mock->expected_call_count++;
 }
 
 void _mock_expect_call_callback(_mock_t *mock, void *callback) {

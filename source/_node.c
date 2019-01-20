@@ -5,32 +5,35 @@
 #include <stddef.h>
 #include <testable.h>
 #include "_node.h"
-#include "_pool.h"
+#include "block_pool.h"
 
 static _node_t pool_buffer[NODE_POOL_SIZE];
-static pool_t  pool;
+static block_pool_t  pool;
 
 
 void _node_pool_initialize() {
-    pool_init(&pool, pool_buffer, NODE_POOL_SIZE * sizeof(_node_t), sizeof(_node_t));
+    block_pool_init(&pool, sizeof(_node_t), pool_buffer, pool_buffer+NODE_POOL_SIZE);
 }
 
 void *_node_allocate() {
     _node_t *new_node;
 
     /* initialize pool if required */
-    if (pool.memory != pool_buffer) {
+    if (!block_pool_is_valid(&pool)) {
         _node_pool_initialize();
     }
 
     /* get new node from front of free list */
-    new_node = pool_alloc(&pool);
+    new_node = block_allocate(&pool);
+
+    new_node->next = new_node;
+    new_node->prev = new_node;
 
     return new_node;
 }
 
 void _node_release(_node_t *node) {
-    pool_free(&pool, node);
+    block_release(node);
 }
 
 void _node_initialize(_node_t *node, void *data) {
@@ -60,6 +63,12 @@ void _node_insert(_node_t *head, _node_t *node) {
 
     /* link head to node */
     head->prev = node;
+}
+
+void _node_append(_node_t *head, void *data) {
+    _node_t *node = _node_allocate();
+    node->data = data;
+    _node_insert(head, node);
 }
 
 void _node_remove(_node_t *node) {
@@ -99,4 +108,19 @@ _node_t *_node_filter(_node_t *head, int (*except)(_node_t *node)) {
         unfiltered = unfiltered->next;
     } while (unfiltered != NULL && unfiltered != head);
     return filtered;
+}
+
+void *_node_find_match(_node_t *head, _node_matcher_t matcher, void *data) {
+    _node_t *curr = head;
+    _node_t *return_ptr = NULL;
+    if(head != NULL) {
+        do {
+            if (matcher(curr->data, data)) {
+                return_ptr = curr->data;
+            }
+            curr = curr->next;
+        } while (curr != head);
+    }
+
+    return return_ptr;
 }

@@ -1,0 +1,3 @@
+[submodule "extern/memorypool"]
+	path = extern/memorypool
+	url = https://github.com/andrewwade/memorypool.git

@@ -4,16 +4,17 @@
 
 #include <string.h>
 #include "_mock_call.h"
-#include "_pool.h"
+#include "byte_pool.h"
+#include "block_pool.h"
 
-extern pool_t *byte_pool;
-extern pool_t *mock_call_pool;
+extern byte_pool_t *mock_byte_pool;
+extern block_pool_t *mock_call_pool;
 
 void _mock_value_deep_copy(_mock_value_t *dest, const _mock_value_t *src) {
     dest->type = src->type;
     dest->size = src->size;
     if(dest->address == NULL) {
-        dest->address = pool_alloc(byte_pool, src->size);
+        dest->address = byte_allocate(mock_byte_pool, src->size);
     }
     if(src->address != NULL) {
         memcpy(dest->address, src->address, src->size);
@@ -21,7 +22,7 @@ void _mock_value_deep_copy(_mock_value_t *dest, const _mock_value_t *src) {
 }
 
 void _mock_value_destroy(_mock_value_t *value) {
-    pool_free(byte_pool, value->address);
+    byte_release(value->address);
     value->address = NULL;
     value->size = 0;
     value->type = NULL;
@@ -38,13 +39,15 @@ void _mock_variable_destroy(_mock_variable_t *variable) {
 }
 
 _mock_call_t * _mock_call_create(_mock_value_t returns, _mock_variable_t *argv, uint8_t argc) {
-    _mock_call_t *new_call = pool_alloc(mock_call_pool);
-    new_call->call_count = 0;
-    new_call->callback = NULL;
-    new_call->argv = NULL;
-    new_call->argc = argc;
-    _mock_call_set_return_value(new_call, returns);
-    _mock_call_set_arguments(new_call, argv);
+    _mock_call_t *new_call = block_allocate(mock_call_pool);
+    if(new_call != NULL) {
+        new_call->call_count = 0;
+        new_call->callback   = NULL;
+        new_call->argv       = NULL;
+        new_call->argc       = argc;
+        _mock_call_set_return_value(new_call, returns);
+        _mock_call_set_arguments(new_call, argv);
+    }
     return new_call;
 }
 
@@ -54,7 +57,7 @@ void _mock_call_destroy(_mock_call_t * call) {
         _mock_variable_destroy(&call->argv[i]);
     }
 
-    pool_free(byte_pool, call->argv);
+    byte_release(call->argv);
     call->argv = NULL;
     call->argc = 0;
     call->callback = NULL;
@@ -79,7 +82,7 @@ void _mock_call_set_return_value(_mock_call_t *call, _mock_value_t value) {
 
 void _mock_call_set_arguments(_mock_call_t *call, _mock_variable_t *argv) {
     if(call->argv == NULL && call->argc > 0) {
-        call->argv = pool_alloc(byte_pool, sizeof(_mock_variable_t)*call->argc);
+        call->argv = byte_allocate(mock_byte_pool, sizeof(_mock_variable_t)*call->argc);
     }
     if(call->argv != NULL) {
         for (uint8_t i = 0; i < call->argc; i++) {

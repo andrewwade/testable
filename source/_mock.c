@@ -31,7 +31,12 @@ void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args) {
 
     _mock_call_increment_call_count(received_call);
 
-    _node_append(mock->received_calls, received_call);
+    if(mock->received_calls == NULL) {
+        mock->received_calls = _node_allocate();
+        mock->received_calls->data = received_call;
+    } else {
+        _node_append(mock->received_calls, received_call);
+    }
 
     return received_call->return_value.address;
 }
@@ -40,7 +45,12 @@ void _mock_expect_call(_mock_t *mock) {
     _mock_call_t *new_expected_call = _mock_call_create(mock->return_value, (_mock_variable_t *) mock->argv, mock->argc);
     new_expected_call->call_count = 1;
     new_expected_call->callback   = NULL;
-    _node_append(mock->expected_calls, new_expected_call);
+    if(mock->expected_calls == NULL) {
+        mock->expected_calls = _node_allocate();
+        mock->expected_calls->data = new_expected_call;
+    } else {
+        _node_append(mock->expected_calls, new_expected_call);
+    }
 }
 
 void _mock_expect_call_callback(_mock_t *mock, void *callback) {

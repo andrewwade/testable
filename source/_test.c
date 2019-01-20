@@ -5,14 +5,14 @@
 #include <printf.h>
 #include "_node.h"
 #include "_test.h"
-#include "_pool.h"
+#include "block_pool.h"
 
 #ifndef TEST_POOL_SIZE
 #define TEST_POOL_SIZE 512
 #endif
 
 static _test_t pool_buffer[TEST_POOL_SIZE];
-static pool_t  pool = {0};
+static block_pool_t  pool = {0};
 
 
 static VOID test_assert_fail_callback(void *user, int code, char *message) {
@@ -31,7 +31,7 @@ static VOID test_assert_fail_callback(void *user, int code, char *message) {
 
 
 void _test_pool_initialize() {
-    pool_init(&pool, pool_buffer, TEST_POOL_SIZE * sizeof(_test_t), sizeof(_test_t));
+    block_pool_init(&pool, sizeof(_test_t), pool_buffer, pool_buffer+TEST_POOL_SIZE);
 }
 
 VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *)) {
@@ -42,10 +42,10 @@ VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *)) {
 }
 
 _test_t *_test_allocate() {
-    if (pool.memory != pool_buffer) {
+    if (block_pool_is_valid(&pool)) {
         _test_pool_initialize();
     }
-    return pool_alloc(&pool);
+    return block_allocate(&pool);
 }
 
 VOID _test_release(_test_t *test) {

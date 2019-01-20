@@ -41,8 +41,8 @@ _mock_t _MOCK_GET_MOCK(fname) = {                                               
     .expected_call_count = 0,                                                                                       \
     .received_call_count = 0,                                                                                       \
     .return_value = _MOCK_VALUE(return_type),                                                                       \
-    .arguments_count = IF_ELSE(HAS_ARGS(args))(COUNT(LIST_PAIRS(args)), 0),                                         \
-    .arguments = {IF(HAS_ARGS(args))(MAP_PAIRS(_MOCK_VARIABLE, COMMA, args))},                                      \
+    .argc = IF_ELSE(HAS_ARGS(args))(COUNT(LIST_PAIRS(args)), 0),                                                    \
+    .argv = {IF(HAS_ARGS(args))(MAP_PAIRS(_MOCK_VARIABLE, COMMA, args))},                                           \
 };                                                                                                                  \
                                                                                                                     \
 /* function definition */                                                                                           \

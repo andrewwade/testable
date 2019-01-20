@@ -8,7 +8,6 @@
 #include "stdio.h"
 
 
-
 #include "mockable.h"
 #include "test.h"
 
@@ -31,15 +30,16 @@ void my_override(int a) {
 }
 
 void my_test() {
-    int x                                             = 5;
     EXPECT_CALL(my_test_func).WITH_ARGS(3).CALLBACK(my_override).RETURNS(3);
-    EXPECT_CALL(my_test_func).WITH_ARGS(3).RETURNS(3);
+    EXPECT_CALL(my_test_func).WITH_ARGS(8).RETURNS(5);
     EXPECT_CALL(my_test_func).WITH_ARGS(3).TIMES(3);
     EXPECT_CALL(test_void_function).TIMES(3);
 
     printf("Calling test function(3)\n\t");
-    int resp = test_my_test_func(3);
+    int resp = test_my_test_func(8);
     printf("\tResponse=%d\n\n", resp);
+    int resp2 = test_my_test_func(3);
+    printf("\tResponse=%d\n\n", resp2);
     test_void_function();
 }
 

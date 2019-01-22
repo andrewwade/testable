@@ -3,7 +3,7 @@
 //
 
 #include "asserts.h"
-#include "_node.h"
+#include "_list.h"
 #include "_test.h"
 #include "_group.h"
 #include <stdio.h>
@@ -87,7 +87,7 @@ void _group_run_all(_group_t *group) {
     /* remove group fail point */
     _assert_pop_fail_point();
 
-    TEST_OUTPUT("\nTest group '%s' passed %d out of %d.\n", group->name, group->pass_count, group->test_count);
+    TEST_OUTPUT("\nTest group '%s' passed %d out of %d.\n\n", group->name, group->pass_count, group->test_count);
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {
@@ -114,7 +114,7 @@ void _group_add_test(_group_t *group, _test_t *test) {
         group->test = new_node;
     } else {
         /* add test to group */
-        _node_insert(group->test, new_node);
+        _list_insert(group->test, new_node);
     }
     group->test_count++;
 }
@@ -137,7 +137,7 @@ void _group_add_fail(_group_t *group, _test_t *test) {
         group->fail = new_node;
     } else {
         /* insert new node into fail list */
-        _node_insert(group->fail, new_node);
+        _list_insert(group->fail, new_node);
     }
 
     /* increase number of failed tests */
@@ -162,7 +162,7 @@ void _group_add_pass(_group_t *group, _test_t *test) {
         group->pass = new_node;
     } else {
         /* insert new node into pass list */
-        _node_insert(group->pass, new_node);
+        _list_insert(group->pass, new_node);
     }
     
     /* increase number of passed tests */
@@ -187,7 +187,7 @@ void _group_add_skip(_group_t *group, _test_t *test) {
         group->skip = new_node;
     } else {
         /* insert new node into skip list */
-        _node_insert(group->skip, new_node);
+        _list_insert(group->skip, new_node);
     }
 
     /* increase number of skipped tests */

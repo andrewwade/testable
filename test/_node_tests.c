@@ -3,7 +3,7 @@
 //
 
 #include "testable.h"
-#include "../source/_node.h"
+#include "../source/_list.h"
 #include <setjmp.h>
 #include <printf.h>
 
@@ -75,7 +75,7 @@ TEST(_node_initialize_set_data_to_data_arg) {
 }
 
 TEST(_node_remove_check_for_null_node) {
-    _node_remove(NULL);
+    _list_remove(NULL);
 }
 
 TEST(_node_remove_links_previous_to_next) {
@@ -83,7 +83,7 @@ TEST(_node_remove_links_previous_to_next) {
 
     node.next = &next;
     node.prev = &previous;
-    _node_remove(&node);
+    _list_remove(&node);
 
     ASSERT_PTR_EQ(&next, previous.next);
 }
@@ -93,15 +93,15 @@ TEST(_node_remove_links_next_to_previous) {
 
     node.next     = &next;
     node.prev = &previous;
-    _node_remove(&node);
+    _list_remove(&node);
 
     ASSERT_PTR_EQ(&previous, next.prev);
 }
 
 TEST(_node_insert_check_for_null_nodes) {
     _node_t node;
-    EXPECT_ASSERT_FAIL(_node_insert(NULL,&node));
-    EXPECT_ASSERT_FAIL(_node_insert(&node, NULL));
+    EXPECT_ASSERT_FAIL(_list_insert(NULL,&node));
+    EXPECT_ASSERT_FAIL(_list_insert(&node, NULL));
 }
 
 TEST_GROUP(node_tests) {

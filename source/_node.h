@@ -23,6 +23,7 @@ typedef struct _node_t {
 } _node_t;
 
 typedef int (*_node_matcher_t)(void *node_data, void *matcher_data);
+
 /**
  * Allocate a new node
  * @return
@@ -42,29 +43,7 @@ void _node_release(_node_t *node);
  */
 void _node_initialize(_node_t *node, void *data);
 
-/**
- * Insert node into list
- * @param head Front of list
- * @param node New node to insert
- */
-void _node_insert(_node_t *head, _node_t *node);
 
-void _node_append(_node_t *head, void *data);
-
-void *_node_find_match(_node_t *head, _node_matcher_t matcher, void *data);
-
-/**
- * Remove node from its list
- * @param node Node to remove
- */
-void _node_remove(_node_t *node);
-
-/**
- *
- * @param node
- * @param predicate
- */
-_node_t *_node_filter(_node_t *node, int (*predicate)(_node_t *node));
 
 /**
  * Next Node access
@@ -75,11 +54,6 @@ _node_t *_node_filter(_node_t *node, int (*predicate)(_node_t *node));
  * Previous node access
  */
 #define _node_prev(node) ((node)->prev)
-
-/**
- * Access last node assuming (node) is head
- */
-#define _node_last(node) ((node)->prev)
 
 /**
  * Data access

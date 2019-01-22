@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <memory.h>
 #include "_assert.h"
+#include "_list.h"
 
 #define STRING_NAME(name) #name
 #define TO_STRING(x) STRING_NAME(x)
@@ -134,7 +135,7 @@ VOID _assert_push_fail_point(jmp_buf *jump) {
     if (fail_jump_stack == NULL) {
         fail_jump_stack = node;
     } else {
-        _node_insert(fail_jump_stack, node);
+        _list_insert(fail_jump_stack, node);
     }
 }
 
@@ -145,9 +146,16 @@ jmp_buf *_assert_pop_fail_point() {
     if (fail_jump_stack == NULL) {
         return NULL;
     } else {
-        pop_node  = _node_last(fail_jump_stack);
+        pop_node  = _list_last(fail_jump_stack);
         pop_point = _node_data(pop_node);
-        _node_remove(pop_node);
+
+        if(pop_node == fail_jump_stack) {
+            // empty, return jump stack to NULL
+            fail_jump_stack = NULL;
+        } else {
+            _list_remove(pop_node);
+        }
+
         _node_release(pop_node);
         return pop_point;
     }
@@ -157,7 +165,7 @@ jmp_buf *_assert_get_fail_point() {
     if (fail_jump_stack == NULL) {
         return NULL;
     } else {
-        return _node_last(fail_jump_stack)->data;
+        return _list_last(fail_jump_stack)->data;
     }
 }
 
@@ -167,7 +175,7 @@ VOID _assert_add_fail_callback(fail_callback_t *callback) {
     if (fail_callback_queue == NULL) {
         fail_callback_queue = node;
     } else {
-        _node_insert(fail_callback_queue, node);
+        _list_insert(fail_callback_queue, node);
     }
     fail_callback_queue_count++;
 }
@@ -176,7 +184,7 @@ VOID _assert_remove_fail_callback(fail_callback_t *callback) {
     _node_t *node = fail_callback_queue;
     do {
         if (node->data == callback) {
-            _node_remove(node);
+            _list_remove(node);
             _node_release(node);
             fail_callback_queue_count--;
             break;
@@ -189,7 +197,7 @@ VOID _assert_remove_fail_callback(fail_callback_t *callback) {
 
 }
 
-VOID _assert_true(CHAR *explanation, BOOLEAN condition, CHAR *file, UINT line, char *message, ...) {
+VOID _assert_true(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char *message, ...) {
     if(!condition) {
         va_list args;
         char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
@@ -202,7 +210,7 @@ VOID _assert_true(CHAR *explanation, BOOLEAN condition, CHAR *file, UINT line, c
     }
 }
 
-VOID _assert_false(CHAR *explanation, BOOLEAN condition, CHAR *file, UINT line, char *message, ...) {
+VOID _assert_false(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char *message, ...) {
     if(condition) {
         va_list args;
         char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
@@ -321,6 +329,40 @@ VOID _assert_int_equal(CHAR *expected_name, INT expected, CHAR *actual_name, INT
         append_location(buf, file, line);
         append_argument(buf, "Expected", expected_name, "%d", expected);
         append_argument(buf, "Actual", actual_name, "%d", actual);
+        append_vmessage(buf, message, args);
+        va_end(args);
+        ASSERT_FAILED(0, buf);
+    }
+}
+
+VOID _assert_ulong_equal(CHAR *expected_name, ULONG expected, CHAR *actual_name, ULONG actual, CHAR *file, UINT line, CHAR *message, ...) {
+    if (expected != actual) {
+        va_list args;
+        char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+
+        va_start(args, message);
+
+        append_failure(buf, "ULONG should be equal to expected.");
+        append_location(buf, file, line);
+        append_argument(buf, "Expected", expected_name, "%ul", expected);
+        append_argument(buf, "Actual", actual_name, "%ul", actual);
+        append_vmessage(buf, message, args);
+        va_end(args);
+        ASSERT_FAILED(0, buf);
+    }
+}
+
+VOID _assert_ulong_greater_or_equal(CHAR *expected_name, ULONG expected, CHAR *actual_name, ULONG actual, CHAR *file, UINT line, CHAR *message, ...) {
+    if (expected > actual) {
+        va_list args;
+        char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+
+        va_start(args, message);
+
+        append_failure(buf, "ULONG should be greater than or equal to expected.");
+        append_location(buf, file, line);
+        append_argument(buf, "Expected", expected_name, "%ul", expected);
+        append_argument(buf, "Actual", actual_name, "%ul", actual);
         append_vmessage(buf, message, args);
         va_end(args);
         ASSERT_FAILED(0, buf);

@@ -3,16 +3,16 @@
 //
 #include <stdlib.h>
 #include <printf.h>
-#include "_node.h"
+#include "_list.h"
 #include "_test.h"
-#include "block_pool.h"
+#include "_pool.h"
 
 #ifndef TEST_POOL_SIZE
 #define TEST_POOL_SIZE 512
 #endif
 
-static _test_t pool_buffer[TEST_POOL_SIZE];
-static block_pool_t  pool = {0};
+static _test_t test_pool_buffer[TEST_POOL_SIZE];
+static _pool_t  test_pool = {0};
 
 
 static VOID test_assert_fail_callback(void *user, int code, char *message) {
@@ -31,7 +31,7 @@ static VOID test_assert_fail_callback(void *user, int code, char *message) {
 
 
 void _test_pool_initialize() {
-    block_pool_init(&pool, sizeof(_test_t), pool_buffer, pool_buffer+TEST_POOL_SIZE);
+    _pool_init(&test_pool, sizeof(_test_t), test_pool_buffer, &test_pool_buffer[TEST_POOL_SIZE]);
 }
 
 VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *)) {
@@ -42,14 +42,14 @@ VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *)) {
 }
 
 _test_t *_test_allocate() {
-    if (!block_pool_is_valid(&pool)) {
+    if (!_pool_is_valid(&test_pool)) {
         _test_pool_initialize();
     }
-    return block_allocate(&pool);
+    return _pool_allocate(&test_pool);
 }
 
 VOID _test_release(_test_t *test) {
-    block_release(test);
+    _pool_release(&test_pool, test);
 }
 
 
@@ -69,7 +69,7 @@ VOID _test_add_fail_callback(_test_t *test, void *user, fail_callback_t *callbac
         test->callbacks = node;
     } else {
         /* insert new callback into faile callbacks list */
-        _node_insert(test->callbacks, node);
+        _list_insert(test->callbacks, node);
     }
     test->callbacks_count++;
 }
@@ -87,7 +87,7 @@ VOID _test_remove_fail_callback(_test_t *test, VOID *user, fail_callback_t *call
         do {
             if (_node_data(node) == callback) {
                 /* remove node */
-                _node_remove(node);
+                _list_remove(node);
                 _node_release(node);
                 test->callbacks_count--;
                 break;

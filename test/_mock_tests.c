@@ -39,11 +39,6 @@ void my_override(int a) {
 
 TEST(_mock_test_setup) {
     callback_param = -1;
-    mock_call_pool = &call_pool;
-    mock_byte_pool = &byte_pool;
-
-    byte_pool_init(mock_byte_pool, byte_buffer, 2048);
-    block_pool_init(mock_call_pool, sizeof(_mock_call_t), call_buffer, call_buffer+2048);
 }
 
 TEST(_mock_test_teardown) {

@@ -119,9 +119,9 @@ extern "C" {
 #define NOT(x) CHECK(PRIMITIVE_CAT(NOT_, x))
 #define NOT_0 PROBE(~)
 
-#define BOOL(x) COMPL(NOT(x))
+#define TO_BOOL(x) COMPL(NOT(x))
 
-#define IF(c) _IF(BOOL(c))
+#define IF(c) _IF(TO_BOOL(c))
 #define _IF(c) PRIMITIVE_CAT(_IF_,c)
 #define _IF_0(...)
 #define _IF_1(...) __VA_ARGS__

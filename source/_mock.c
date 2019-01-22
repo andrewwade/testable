@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include "_mock.h"
+#include "_list.h"
 
 void _log_mock_call(_mock_t *mock, _mock_variable_t *argv) {
 //    printf("%s %s(", mock->return_value.type, mock->name);
@@ -18,8 +19,8 @@ void _log_mock_call(_mock_t *mock, _mock_variable_t *argv) {
 
 void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args) {
     _log_mock_call(mock, args);
-    _mock_call_t * received_call = _node_find_match(mock->received_calls, _mock_call_arg_matcher, args);
-    _mock_call_t * expected_call = _node_find_match(mock->expected_calls, _mock_call_arg_matcher, args);
+    _mock_call_t * received_call = _list_find_match(mock->received_calls, _mock_call_arg_matcher, args);
+    _mock_call_t * expected_call = _list_find_match(mock->expected_calls, _mock_call_arg_matcher, args);
 
     if(received_call == NULL) {
         if(expected_call == NULL) {
@@ -36,7 +37,7 @@ void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args) {
         mock->received_calls = _node_allocate();
         mock->received_calls->data = received_call;
     } else {
-        _node_append(mock->received_calls, received_call);
+        _list_append(mock->received_calls, received_call);
     }
 
     return received_call->return_value.address;
@@ -50,7 +51,7 @@ void _mock_expect_call(_mock_t *mock) {
         mock->expected_calls = _node_allocate();
         mock->expected_calls->data = new_expected_call;
     } else {
-        _node_append(mock->expected_calls, new_expected_call);
+        _list_append(mock->expected_calls, new_expected_call);
     }
     mock->expected_call_count++;
 }
@@ -77,9 +78,9 @@ void _mock_expect_call_times(_mock_t *mock, uint32_t multiplier) {
 }
 
 _mock_call_t *_mock_get_last_expected_call(_mock_t *mock) {
-    return _node_data(_node_last(mock->expected_calls));
+    return _node_data(_list_last(mock->expected_calls));
 }
 
 _mock_call_t *_mock_get_last_received_call(_mock_t *mock) {
-    return _node_data(_node_last(mock->received_calls));
+    return _node_data(_list_last(mock->received_calls));
 }

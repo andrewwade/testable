@@ -12,6 +12,9 @@ extern "C" {
 #include "stdint.h"
 #include "_node.h"
 
+#define MOCK_CALL_BUFFER_SIZE 256
+#define MOCK_BYTE_BUFFER_SIZE 512
+
 typedef struct _mock_value_t {
     const char *type;
     void       *address;

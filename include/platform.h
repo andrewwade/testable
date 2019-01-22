@@ -19,8 +19,8 @@ extern "C" {
 #define NULL ((void*)0)
 #endif /* NULL */
 
-#ifndef BOOLEAN
-#define BOOLEAN _Bool
+#ifndef BOOL
+#define BOOL _Bool
 #endif
 
 #ifndef CHAR
@@ -54,6 +54,10 @@ extern "C" {
 #ifndef ULONG
 #define ULONG unsigned long
 #endif /* ULONG */
+
+#ifndef SIZE
+#define SIZE unsigned long
+#endif
 
 #ifndef FLOAT
 #define FLOAT float

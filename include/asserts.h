@@ -670,6 +670,9 @@ _assert_pointer_equal(ARG(expected), ARG(actual), LOC, MSG(message))
 #define ASSERT_PTR_NE(expected, actual, message...) \
 _assert_pointer_not_equal(ARG(expected), ARG(actual), LOC, MSG(message))
 
+#define ASSERT_PTR_NOT_NULL(pointer, message...) ASSERT_PTR_NE(NULL, pointer, message)
+#define ASSERT_PTR_NULL(pointer, message...) ASSERT_PTR_EQ(NULL, pointer, message)
+
 /** STRING **/
 /* assert that (expected[i] == actual[i]) for all values of i where (0 <= i < max(strlen(expected), strlen(actual))) */
 #define ASSERT_STRING_EQ(expected, actual, message...) \

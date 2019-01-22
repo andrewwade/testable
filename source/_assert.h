@@ -36,6 +36,11 @@ VOID _assert_add_fail_callback(fail_callback_t *callback);
 
 VOID _assert_remove_fail_callback(fail_callback_t *callback);
 
+/** BOOL **/
+VOID _assert_true(ARG(BOOLEAN, condition), LOC, MSG);
+
+VOID _assert_false(ARG(BOOLEAN, condition), LOC, MSG);
+
 /** CHAR **/
 VOID _assert_char_equal(ARG(CHAR, expected), ARG(CHAR, actual), LOC, MSG);
 

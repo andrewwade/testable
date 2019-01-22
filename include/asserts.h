@@ -23,7 +23,7 @@ extern "C" {
 
 /* generic comparators(not very descriptive) */
 #if TEST_SUPPORT_VARIADIC_MACROS
-#define ASSERT(condition, message...)
+#define ASSERT(condition, message...) ASSERT_TRUE(condition, message)
 #define ASSERT_EQ(expected, actual, message...) ASSERT(actual == expected, message)
 #define ASSERT_NE(expected, actual, message...) ASSERT(actual != expected, message)
 #define ASSERT_GT(expected, actual, message...) ASSERT(actual > expected, message)
@@ -31,6 +31,12 @@ extern "C" {
 #define ASSERT_GE(expected, actual, message...) ASSERT(actual >= expected, message)
 #define ASSERT_LE(expected, actual, message...) ASSERT(actual <= expected, message)
 
+/** BOOL **/
+#define ASSERT_TRUE(condition, message...) \
+_assert_true(ARG(condition), LOC, MSG(message))
+
+#define ASSERT_FALSE(condition, message...) \
+_assert_false(ARG(condition), LOC, MSG(message))
 
 /** CHAR */
 /** assert that (actual == expected) */

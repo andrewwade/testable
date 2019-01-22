@@ -33,6 +33,9 @@ void *_node_allocate() {
 }
 
 void _node_release(_node_t *node) {
+    node->data = 0;
+    node->next = 0;
+    node->prev = 0;
     block_release(node);
 }
 

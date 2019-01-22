@@ -68,8 +68,10 @@ _group_set_setup(group, _test_setup);
 #ifndef TEST_TEARDOWN
 
 /** set test teardown for group */
-#define TEST_TEARDOWN(name)                                             \
-_group_set_teardown(group, &_test_##name)
+#define TEST_TEARDOWN(name)                                                     \
+_test_t *_test_teardown = _test_allocate();                                     \
+_test_initialize(_test_teardown, "teardown "#name, &_test_##name##_function);   \
+_group_set_teardown(group, _test_teardown)
 
 #endif /* TEARDOWN */
 

@@ -87,7 +87,7 @@ void _group_run_all(_group_t *group) {
     /* remove group fail point */
     _assert_pop_fail_point();
 
-    TEST_OUTPUT("Test suite '%s' passed %d out of %d.\n", group->name, group->pass_count, group->test_count);
+    TEST_OUTPUT("\nTest group '%s' passed %d out of %d.\n", group->name, group->pass_count, group->test_count);
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {

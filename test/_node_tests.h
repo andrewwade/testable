@@ -11,7 +11,7 @@ extern "C" {
 
 #include "testable.h"
 
-TEST_GROUP(node_test);
+TEST_GROUP(node_tests);
 
 TEST(_node_initialize_allow_null_data);
 

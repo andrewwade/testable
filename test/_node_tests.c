@@ -104,7 +104,7 @@ TEST(_node_insert_check_for_null_nodes) {
     EXPECT_ASSERT_FAIL(_node_insert(&node, NULL));
 }
 
-TEST_GROUP(node_test) {
+TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_allow_null_data);
 //    TEST_CASE(_node_initialize_check_for_null_node);
     TEST_CASE(_node_initialize_set_next_to_node);

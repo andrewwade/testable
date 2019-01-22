@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <memory.h>
-#include "_assert.h"s
+#include "_assert.h"
 
-#define ASSERT_PTR_EQ_FAILED 1
 #define STRING_NAME(name) #name
 #define TO_STRING(x) STRING_NAME(x)
+
 #define ASSERT_FAILED(code, msg)           \
 assert_fail_callback(code, msg);           \
 longjmp(*(_assert_get_fail_point()), code)
@@ -189,6 +189,32 @@ VOID _assert_remove_fail_callback(fail_callback_t *callback) {
 
 }
 
+VOID _assert_true(CHAR *explanation, BOOLEAN condition, CHAR *file, UINT line, char *message, ...) {
+    if(!condition) {
+        va_list args;
+        char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+        va_start(args, message);
+        append_location(buf, file, line);
+        append_failure(buf, "Condition should be true!");
+        append_argument(buf, "Condition", explanation, "%s", "false");
+        va_end(args);
+        ASSERT_FAILED(0, buf);
+    }
+}
+
+VOID _assert_false(CHAR *explanation, BOOLEAN condition, CHAR *file, UINT line, char *message, ...) {
+    if(condition) {
+        va_list args;
+        char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+        va_start(args, message);
+        append_location(buf, file, line);
+        append_failure(buf, "Condition should be true!");
+        append_argument(buf, "Condition", explanation, "%s", "true");
+        va_end(args);
+        ASSERT_FAILED(0, buf);
+    }
+}
+
 VOID _assert_char_equal(CHAR *expected_name, CHAR expected, CHAR *actual_name, CHAR actual, CHAR *file, UINT line, char *message, ...) {
     if (expected != actual) {
         va_list args;
@@ -293,8 +319,8 @@ VOID _assert_int_equal(CHAR *expected_name, INT expected, CHAR *actual_name, INT
 
         append_failure(buf, "INT should be equal to expected.");
         append_location(buf, file, line);
-        append_argument(buf, "Expected", expected_name, "%u", expected);
-        append_argument(buf, "Actual", actual_name, "%u", actual);
+        append_argument(buf, "Expected", expected_name, "%d", expected);
+        append_argument(buf, "Actual", actual_name, "%d", actual);
         append_vmessage(buf, message, args);
         va_end(args);
         ASSERT_FAILED(0, buf);

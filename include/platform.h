@@ -19,6 +19,10 @@ extern "C" {
 #define NULL ((void*)0)
 #endif /* NULL */
 
+#ifndef BOOLEAN
+#define BOOLEAN _Bool
+#endif
+
 #ifndef CHAR
 #define CHAR char
 #endif /* CHAR */

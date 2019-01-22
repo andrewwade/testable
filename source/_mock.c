@@ -7,12 +7,12 @@
 #include "_mock.h"
 
 void _log_mock_call(_mock_t *mock, _mock_variable_t *argv) {
-    printf("%s %s(", mock->return_value.type, mock->name);
-    for (int i = 0; i < mock->argc; i++) {
-        _mock_variable_t *arg = &argv[i];
-        printf("%s %s", arg->value.type, arg->name);
-    }
-    printf("):\n");
+//    printf("%s %s(", mock->return_value.type, mock->name);
+//    for (int i = 0; i < mock->argc; i++) {
+//        _mock_variable_t *arg = &argv[i];
+//        printf("%s %s", arg->value.type, arg->name);
+//    }
+//    printf("):\n");
 }
 
 

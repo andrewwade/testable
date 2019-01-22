@@ -27,20 +27,26 @@ set(testable_source_files
         source/_mock.c
         source/_mock.h
         source/_mock_call.h
-        source/_mock_call.c)
+        source/_mock_call.c source/_pool.c source/_pool.h source/_list.c source/_stack.c source/_stack.h source/_list.h)
 
-set(testable_test_files
-        test/_node_test.c
-        test/_node_test.h
-        test.h test.c )
+
 
 
 
 include_directories(include)
 
-add_library(testable ${testable_source_files} ${testable_include_files} ${testable_test_files})
+add_library(testable ${testable_source_files} ${testable_include_files})
 target_include_directories(testable INTERFACE include)
 target_link_libraries(testable memorypool)
 
-add_executable(runner main.c)
-target_link_libraries(runner testable)
+link_libraries(testable)
+
+add_executable(test_node test/_node_tests.c test/_node_tests.h test/test_node.c)
+add_executable(test_mock test/_mock_tests.c test/_mock_tests.h test/test_mock.c)
+
+add_executable(test_all
+        test/_node_tests.c
+        test/_node_tests.h
+        test/_mock_tests.c
+        test/_mock_tests.h
+        test/test_all.c)

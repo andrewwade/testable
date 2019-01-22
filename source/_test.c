@@ -42,14 +42,14 @@ VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *)) {
 }
 
 _test_t *_test_allocate() {
-    if (block_pool_is_valid(&pool)) {
+    if (!block_pool_is_valid(&pool)) {
         _test_pool_initialize();
     }
     return block_allocate(&pool);
 }
 
 VOID _test_release(_test_t *test) {
-    ASSERT_EQ(0, pool_free(&pool, test));
+    block_release(test);
 }
 
 

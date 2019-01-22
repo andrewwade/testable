@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <memory.h>
-#include "_assert.h"
 #include "_list.h"
 
 #define STRING_NAME(name) #name
@@ -25,7 +24,12 @@ static VOID assert_fail_callback(int code, char *message) {
         _node_t *node = fail_callback_queue;
         do {
             callback = node->data;
-            callback->call(callback->user, code, message);
+            if (callback->call == NULL) {
+                break;
+            } else {
+                callback->call(callback->user, code, message);
+            }
+            node = node->next;
         } while (node != fail_callback_queue);
     }
 }
@@ -149,7 +153,7 @@ jmp_buf *_assert_pop_fail_point() {
         pop_node  = _list_last(fail_jump_stack);
         pop_point = _node_data(pop_node);
 
-        if(pop_node == fail_jump_stack) {
+        if (pop_node == fail_jump_stack) {
             // empty, return jump stack to NULL
             fail_jump_stack = NULL;
         } else {
@@ -176,6 +180,7 @@ VOID _assert_add_fail_callback(fail_callback_t *callback) {
         fail_callback_queue = node;
     } else {
         _list_insert(fail_callback_queue, node);
+        fail_callback_queue = node;
     }
     fail_callback_queue_count++;
 }
@@ -184,6 +189,9 @@ VOID _assert_remove_fail_callback(fail_callback_t *callback) {
     _node_t *node = fail_callback_queue;
     do {
         if (node->data == callback) {
+            if (node == fail_callback_queue) {
+                fail_callback_queue = node->next;
+            }
             _list_remove(node);
             _node_release(node);
             fail_callback_queue_count--;
@@ -198,9 +206,9 @@ VOID _assert_remove_fail_callback(fail_callback_t *callback) {
 }
 
 VOID _assert_true(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char *message, ...) {
-    if(!condition) {
+    if (!condition) {
         va_list args;
-        char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+        char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
         va_start(args, message);
         append_location(buf, file, line);
         append_failure(buf, "Condition should be true!");
@@ -211,9 +219,9 @@ VOID _assert_true(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char
 }
 
 VOID _assert_false(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char *message, ...) {
-    if(condition) {
+    if (condition) {
         va_list args;
-        char buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+        char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
         va_start(args, message);
         append_location(buf, file, line);
         append_failure(buf, "Condition should be true!");
@@ -367,4 +375,17 @@ VOID _assert_ulong_greater_or_equal(CHAR *expected_name, ULONG expected, CHAR *a
         va_end(args);
         ASSERT_FAILED(0, buf);
     }
+}
+
+VOID _assert_force_failure(CHAR *what, CHAR *file, UINT line, CHAR *message, ...) {
+    va_list args;
+    char    buf[ASSERT_MSG_BUFFER_SIZE] = {0};
+
+    va_start(args, message);
+
+    append_failure(buf, "Forced Failure from %s", what);
+    append_location(buf, file, line);
+    append_vmessage(buf, message, args);
+    va_end(args);
+    ASSERT_FAILED(0, buf);
 }

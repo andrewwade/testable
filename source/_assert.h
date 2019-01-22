@@ -258,6 +258,8 @@ VOID _assert_memory_equal(ARG(VOID *, _expected), ARG(VOID *, _actual), ARG(ULON
 
 VOID _assert_memory_not_equal(ARG(VOID *, _expected), ARG(VOID *, _actual), ARG(ULONG, len), LOC, MSG);
 
+VOID _assert_force_failure(CHAR* what, LOC, MSG);
+
 #undef ARG
 #undef LOC
 #undef MSG

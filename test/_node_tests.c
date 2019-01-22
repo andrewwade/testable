@@ -7,43 +7,10 @@
 #include <setjmp.h>
 #include <printf.h>
 
-jmp_buf temp_jump;
-
-void copy_jmp(jmp_buf dest, jmp_buf src) {
-    for(int i = 0; i < _JBLEN; i++) {
-        dest[i] = src[i];
-    }
-}
-
-int asserts_failed = 0;
-int assert_fail_count = 0;
-void assert_failure(int code, char *message) {
-    TEST_OUTPUT("%s", message);
-    fflush(stdout);
-    asserts_failed++;
-}
-
-void assert_failure_expected(void *user, int code, char *message) {
-    asserts_failed++;
-}
-
-fail_callback_t expect_assert_fail = {NULL, assert_failure_expected};
-
-#define EXPECT_ASSERT_FAIL(call, message...)              \
-expect_assert_fail.user = test;                           \
-_assert_add_fail_callback(&expect_assert_fail);           \
-_assert_push_fail_point(&temp_jump);                      \
-if(!setjmp(temp_jump)) {                                  \
-    assert_fail_count = asserts_failed;                   \
-    call;                                                 \
-}                                                         \
-_assert_pop_fail_point();                                 \
-_assert_remove_fail_callback(&expect_assert_fail);        \
-ASSERT_INT_EQ(assert_fail_count+1,asserts_failed, message)
 
 TEST(_node_initialize_check_for_null_node) {
 
-    EXPECT_ASSERT_FAIL(_node_initialize(NULL, NULL), "_node_initialize did not check for NULL");
+    EXPECT_ASSERT_FAILURE(_node_initialize(NULL, NULL), "_node_initialize() did not check for NULL");
 }
 
 TEST(_node_initialize_allow_null_data) {
@@ -100,17 +67,17 @@ TEST(_node_remove_links_next_to_previous) {
 
 TEST(_node_insert_check_for_null_nodes) {
     _node_t node;
-    EXPECT_ASSERT_FAIL(_list_insert(NULL,&node));
-    EXPECT_ASSERT_FAIL(_list_insert(&node, NULL));
+    EXPECT_ASSERT_FAILURE(_list_insert(NULL,&node));
+    EXPECT_ASSERT_FAILURE(_list_insert(&node, NULL));
 }
 
 TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_allow_null_data);
-//    TEST_CASE(_node_initialize_check_for_null_node);
+    TEST_CASE(_node_initialize_check_for_null_node);
     TEST_CASE(_node_initialize_set_next_to_node);
     TEST_CASE(_node_initialize_set_previous_to_node);
     TEST_CASE(_node_initialize_set_data_to_data_arg);
     TEST_CASE(_node_remove_check_for_null_node);
-//    TEST_CASE(_node_insert_check_for_null_nodes);
+    TEST_CASE(_node_insert_check_for_null_nodes);
 }
 

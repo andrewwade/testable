@@ -21,6 +21,23 @@ extern "C" {
 #define MSG(...) MSG_FMT(__VA_ARGS__) MSG_ARGS(__VA_ARGS__)
 
 
+#define EXPECT_ASSERT_FAILURE(call_function, message...)    \
+do {                                                        \
+    jmp_buf assert_fail_point = {0};                        \
+    fail_callback_t fail_callback = {NULL,NULL};            \
+    _assert_push_fail_point(&assert_fail_point);            \
+    _assert_add_fail_callback(&fail_callback);              \
+    if (!setjmp(assert_fail_point)) {                       \
+        call_function;                                      \
+        _assert_pop_fail_point();                           \
+        _assert_remove_fail_callback(&fail_callback);       \
+        _assert_force_failure(#call_function, LOC, MSG(message));                                 \
+    } else {                                                \
+        _assert_remove_fail_callback(&fail_callback);       \
+    }                                                       \
+} while(0)
+
+
 /* generic comparators(not very descriptive) */
 #if TEST_SUPPORT_VARIADIC_MACROS
 #define ASSERT(condition, message...) ASSERT_TRUE(condition, message)

@@ -5,5 +5,5 @@
 #include "_node_tests.h"
 
 int main() {
-    RUN_TEST_GROUP(node_tests);
+    GROUP_RUN_SINGLE(node_tests);
 }

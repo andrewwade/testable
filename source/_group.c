@@ -15,7 +15,7 @@ static void group_test_fail_callback(void *user, int code, char *message) {
     TEST_OUTPUT("Fail(%d)\n", code);
 }
 
-void _group_run_all(_group_t *group) {
+void _group_run_tests(_group_t *group) {
     int count = 0;
     _test_t *setup, *teardown, *test;
     _node_t *head, *node;

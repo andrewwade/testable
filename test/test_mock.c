@@ -5,5 +5,5 @@
 #include "_mock_tests.h"
 
 int main() {
-    RUN_TEST_GROUP(mock_tests);
+    GROUP_RUN_SINGLE(mock_tests);
 }

@@ -65,7 +65,7 @@ typedef struct _group_t {
  * Run all tests in group
  * @param group
  */
-VOID _group_run_all(_group_t *group);
+VOID _group_run_tests(_group_t *group);
 
 /**
  * Set the setup test to be ran before each test case

@@ -15,15 +15,7 @@ extern "C" {
 #define TEST(name)                                          \
 void _test_##name##_function(_test_t *test)
 
-#define RUN_TEST(name)                                      \
-_test_t _test_##name = {                                    \
-    #name,                                                  \
-    0,                                                      \
-    NULL,                                                   \
-    0,                                                      \
-    &_test_##name##_function                                \
-    };                                                      \
-_test_##name##_function(&_test_##name)
+
 
 /* test case control */
 #if TEST_SUPPORT_VARIADIC_MACROS

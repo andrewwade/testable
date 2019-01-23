@@ -10,6 +10,7 @@ extern "C" {
 #include "asserts.h"
 #include "tests.h"
 #include "groups.h"
+#include "runners.h"
 
 #ifdef __cplusplus
 };

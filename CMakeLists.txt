@@ -34,7 +34,10 @@ set(testable_source_files
         source/_list.c
         source/_list.h
         source/_stack.c
-        source/_stack.h)
+        source/_stack.h
+        source/_runner.c
+        source/_runner.h
+        include/runners.h)
 
 
 
@@ -56,4 +59,4 @@ add_executable(test_all
         test/_node_tests.h
         test/_mock_tests.c
         test/_mock_tests.h
-        test/test_all.c)
+        test/test_all.c test/_list_tests.c test/_list_tests.h test/test_list.c)

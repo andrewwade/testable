@@ -41,35 +41,6 @@ TEST(_node_initialize_set_data_to_data_arg) {
     ASSERT_PTR_EQ(&data, node.data);
 }
 
-TEST(_node_remove_check_for_null_node) {
-    _list_remove(NULL);
-}
-
-TEST(_node_remove_links_previous_to_next) {
-    _node_t node, next, previous;
-
-    node.next = &next;
-    node.prev = &previous;
-    _list_remove(&node);
-
-    ASSERT_PTR_EQ(&next, previous.next);
-}
-
-TEST(_node_remove_links_next_to_previous) {
-    _node_t node, next, previous;
-
-    node.next     = &next;
-    node.prev = &previous;
-    _list_remove(&node);
-
-    ASSERT_PTR_EQ(&previous, next.prev);
-}
-
-TEST(_node_insert_check_for_null_nodes) {
-    _node_t node;
-    EXPECT_ASSERT_FAILURE(_list_insert(NULL,&node));
-    EXPECT_ASSERT_FAILURE(_list_insert(&node, NULL));
-}
 
 TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_allow_null_data);
@@ -77,7 +48,5 @@ TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_set_next_to_node);
     TEST_CASE(_node_initialize_set_previous_to_node);
     TEST_CASE(_node_initialize_set_data_to_data_arg);
-    TEST_CASE(_node_remove_check_for_null_node);
-    TEST_CASE(_node_insert_check_for_null_nodes);
 }
 

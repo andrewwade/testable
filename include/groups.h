@@ -20,12 +20,32 @@ extern void _group_##name##_initialize()
 /** declare a group of tests */
 #define TEST_GROUP(name)                                                \
 void _group_##name##_initialize(_group_t *group)
-
 #endif /* TEST_GROUP */
 
-#ifndef RUN_TEST_GROUP
 
-#define RUN_TEST_GROUP(name)                                            \
+
+#ifndef GROUP_RUN_SINGLE
+
+#define GROUP_RUN_SINGLE(name)                                          \
+_group_t _test_group_##name = {                                         \
+    #name, /* name of group as string */                                \
+    NULL,  /* setup to run before each test */                          \
+    NULL,  /* teardown to run after each test */                        \
+    NULL,  /* list of tests in group */                                 \
+    NULL,  /* list of passed tests */                                   \
+    NULL,  /* list of failed tests */                                   \
+    NULL,  /* list of skipped tests */                                  \
+    0,     /* number of tests in group */                               \
+    0,     /* number of passed tests */                                 \
+    0,     /* number of failed tests */                                 \
+    0      /* number of skipped tests */                                \
+};                                                                      \
+_group_##name##_initialize(&_test_group_##name);                        \
+_group_run_tests(&_test_group_##name)
+
+#endif /* RUN_GROUP */
+
+#define GROUP_CREATE(name)\
 _group_t _test_group_##name = {                                         \
         #name, /* name of group as string */                            \
         NULL,  /* setup to run before each test */                      \
@@ -38,11 +58,14 @@ _group_t _test_group_##name = {                                         \
         0,     /* number of passed tests */                             \
         0,     /* number of failed tests */                             \
         0      /* number of skipped tests */                            \
-};                                                                      \
-_group_##name##_initialize(&_test_group_##name);                        \
-_group_run_all(&_test_group_##name)
+}
 
-#endif /* RUN_GROUP */
+#define GROUP_APPEND(name, group) \
+_group_##group##_initialize(&_test_group_##name)
+
+#define GROUP_RUN_ALL(name) \
+_group_run_tests(&_test_group_##name)
+
 #ifndef TEST_CASE
 
 /** add test case to group */

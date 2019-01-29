@@ -59,30 +59,30 @@ extern "C" {
 #define EAT(...)
 
 
-#define _MAP_1(macro, ...) macro(__VA_ARGS__)
-#define _MAP_2(macro, ...) macro(__VA_ARGS__) _LIST_FOREACH_1(macro, __VA_ARGS__)
-#define _MAP_3(macro, ...) macro(arg) _LIST_FOREACH_2(macro, __VA_ARGS__)
-#define _MAP_4(macro, ...) macro(arg) _LIST_FOREACH_3(macro, __VA_ARGS__)
-#define _MAP_5(macro, ...) macro(arg) _LIST_FOREACH_4(macro, __VA_ARGS__)
-#define _MAP_6(macro, ...) macro(arg) _LIST_FOREACH_5(macro, __VA_ARGS__)
-#define _MAP_7(macro, ...) macro(arg) _LIST_FOREACH_6(macro, __VA_ARGS__)
-#define _MAP_8(macro, ...) macro(arg) _LIST_FOREACH_7(macro, __VA_ARGS__)
-#define _MAP_9(macro, ...) macro(arg) _LIST_FOREACH_8(macro, __VA_ARGS__)
+#define _MAP_1(macro, sep, a, ...) macro(a)
+#define _MAP_2(macro, sep, a, ...) macro(a) sep() _MAP_1(macro, sep, __VA_ARGS__)
+#define _MAP_3(macro, sep, a, ...) macro(a) sep() _MAP_2(macro, sep, __VA_ARGS__)
+#define _MAP_4(macro, sep, a, ...) macro(a) sep() _MAP_3(macro, sep, __VA_ARGS__)
+#define _MAP_5(macro, sep, a, ...) macro(a) sep() _MAP_4(macro, sep, __VA_ARGS__)
+#define _MAP_6(macro, sep, a, ...) macro(a) sep() _MAP_5(macro, sep, __VA_ARGS__)
+#define _MAP_7(macro, sep, a, ...) macro(a) sep() _MAP_6(macro, sep, __VA_ARGS__)
+#define _MAP_8(macro, sep, a, ...) macro(a) sep() _MAP_7(macro, sep, __VA_ARGS__)
+#define _MAP_9(macro, sep, a, ...) macro(a) sep() _MAP_8(macro, sep, __VA_ARGS__)
 
 #define _MAP_PAIRS_0(macro, sep)
 #define _MAP_PAIRS_1(macro, sep, a, ...) a
 #define _MAP_PAIRS_2(macro, sep, a, b, ...) macro(a, b)
 #define _MAP_PAIRS_4(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_2(macro, sep, __VA_ARGS__)
-#define _MAP_PAIRS_6(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_4(macro, sep, __VA_ARGS__)
-#define _MAP_PAIRS_8(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_6(macro, sep, __VA_ARGS__)
-#define _MAP_PAIRS_10(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b)sep() _MAP_PAIRS_8(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_6(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_4(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_8(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_6(macro, sep, __VA_ARGS__)
+#define _MAP_PAIRS_10(macro, sep, a, b, ...) _MAP_PAIRS_2(macro, sep, a, b) sep() _MAP_PAIRS_8(macro, sep, __VA_ARGS__)
 
-#define MAP(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_9, _MAP_8, _MAP_7, _MAP_6, _MAP_5, _MAP_4, _MAP_3, _MAP_2, _MAP_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
+#define MAP(macro, sep, ...) _GET_NTH_ARG("ignore", __VA_ARGS__, _MAP_9, _MAP_8, _MAP_7, _MAP_6, _MAP_5, _MAP_4, _MAP_3, _MAP_2, _MAP_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
 #define MAP_PAIRS(macro, sep, ...) _GET_NTH_ARG(__VA_ARGS__, _MAP_PAIRS_10, EAT, _MAP_PAIRS_8, EAT, _MAP_PAIRS_6, EAT, _MAP_PAIRS_4, EAT, _MAP_PAIRS_2, _MAP_PAIRS_1, _DO_NOTHING)(macro, sep, ##__VA_ARGS__)
 
-
-#define CAT3(a, b, c) a ## b ## c
+#define _CAT3(a, b, c) a ## b ## c
+#define CAT3(a, b, c) _CAT3(a, b, c)
 #define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
 #define PRIMITIVE_CAT(a, ...) a ## __VA_ARGS__
 #define IF_ELSE(c) PRIMITIVE_CAT(_IF_ELSE_, c)
@@ -131,6 +131,7 @@ extern "C" {
 #define WHEN(c) IF(c)(EXPAND, EAT)
 #define FIRST(a, ...) a
 #define SECOND(a, b, ...) b
+#define THIRD(a, b, c, ...) c
 #define PRIMITIVE_COMPARE(x, y) IS_PAREN \
 ( \
 COMPARE_ ## x ( COMPARE_ ## y) (())  \

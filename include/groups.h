@@ -67,35 +67,29 @@ _group_##group##_initialize(&_test_group_##name)
 _group_run_tests(&_test_group_##name)
 
 #ifndef TEST_CASE
-
 /** add test case to group */
-#define TEST_CASE(name)                                                 \
+#define TEST_CASE(name)                                                  \
 _test_t *_test_##name = _test_allocate();                               \
 _test_initialize(_test_##name, #name, &_test_##name##_function);        \
 _group_add_test(group, _test_##name)
-
 #endif /* CASE */
 
 
 #ifndef TEST_SETUP
-
 /** set test setup for group */
 #define TEST_SETUP(name)                                                \
 _test_t *_test_setup = _test_allocate();                                \
 _test_initialize(_test_setup, "setup "#name, &_test_##name##_function); \
 _group_set_setup(group, _test_setup);
-
 #endif /* SETUP */
 
 
 #ifndef TEST_TEARDOWN
-
 /** set test teardown for group */
 #define TEST_TEARDOWN(name)                                                     \
 _test_t *_test_teardown = _test_allocate();                                     \
 _test_initialize(_test_teardown, "teardown "#name, &_test_##name##_function);   \
 _group_set_teardown(group, _test_teardown)
-
 #endif /* TEARDOWN */
 
 #ifdef __cplusplus

@@ -41,7 +41,6 @@ TEST(_node_initialize_set_data_to_data_arg) {
     ASSERT_PTR_EQ(&data, node.data);
 }
 
-
 TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_allow_null_data);
     TEST_CASE(_node_initialize_check_for_null_node);
@@ -49,4 +48,3 @@ TEST_GROUP(node_tests) {
     TEST_CASE(_node_initialize_set_previous_to_node);
     TEST_CASE(_node_initialize_set_data_to_data_arg);
 }
-

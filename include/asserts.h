@@ -34,6 +34,7 @@ do {                                                        \
         _assert_force_failure(#call_function, LOC, MSG(message));                                 \
     } else {                                                \
         _assert_remove_fail_callback(&fail_callback);       \
+        _assert_pop_fail_point();                           \
     }                                                       \
 } while(0)
 

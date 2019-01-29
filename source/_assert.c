@@ -64,7 +64,29 @@ static void append_failure(char *buf, char *fmt, ...) {
     snprintf(buf, max_length, "\n");
     va_end(args);
 }
+static void append_condition(char *buf, char *explanation, int condition) {
+    va_list      args;
+    unsigned int write_length = 0;
+    unsigned int max_length   = ASSERT_MSG_BUFFER_SIZE;
 
+    /* go to end of string */
+    while (*buf != '\0') {
+        max_length--;
+        buf++;
+    }
+
+    /* if argument is NULL */
+    if (!strcmp(TO_STRING(NULL), explanation)) {
+        /* change argument name to "NULL" instead of "((void*)0)" */
+        explanation = null;
+    }
+
+    write_length = snprintf(buf, max_length, "    Condition: %s\n", explanation);
+    buf += write_length;
+    max_length -= write_length;
+    snprintf(buf, max_length, "       Result: %s\n", (condition) ? "true":"false");
+
+}
 static void append_argument(char *buf, char *arg, char *arg_name, char *fmt, ...) {
     va_list      args;
     unsigned int write_length = 0;
@@ -212,7 +234,7 @@ VOID _assert_true(CHAR *explanation, BOOL condition, CHAR *file, UINT line, char
         va_start(args, message);
         append_location(buf, file, line);
         append_failure(buf, "Condition should be true!");
-        append_argument(buf, "Condition", explanation, "%s", "false");
+        append_condition(buf, explanation, condition);
         va_end(args);
         ASSERT_FAILED(0, buf);
     }

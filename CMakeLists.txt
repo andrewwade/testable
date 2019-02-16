@@ -3,8 +3,6 @@ project(testable C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_subdirectory(extern/memorypool)
-include_directories(extern/memorypool/include)
 
 set(testable_include_files
         include/asserts.h
@@ -13,6 +11,7 @@ set(testable_include_files
         include/tests.h
         include/testable.h
         include/mockable.h)
+
 set(testable_source_files
         source/_assert.c
         source/_assert.h
@@ -59,4 +58,12 @@ add_executable(test_all
         test/_node_tests.h
         test/_mock_tests.c
         test/_mock_tests.h
-        test/test_all.c test/_list_tests.c test/_list_tests.h test/test_list.c test/_pool_tests.c test/_pool_tests.h test/_query_tests.c test/_query_tests.h)
+        test/test_all.c
+        test/_list_tests.c
+        test/_list_tests.h
+        test/_pool_tests.c
+        test/_pool_tests.h
+        test/_query_tests.c
+        test/_query_tests.h
+        test/_test_tests.c
+        test/_test_tests.h)

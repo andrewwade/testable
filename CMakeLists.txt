@@ -9,8 +9,8 @@ set(testable_include_files
         include/groups.h
         include/platform.h
         include/tests.h
-        include/testable.h
-        include/mockable.h)
+        include/clarity/testing.h
+        include/clarity/mocking.h)
 
 set(testable_source_files
         source/testing/_assert.c
@@ -20,8 +20,8 @@ set(testable_source_files
         source/utilities/_node.c
         source/utilities/_node.h
         source/testing/_test.h
-        source/testing/_output.h
-        source/testing/_output.c
+        source/utilities/_output.h
+        source/utilities/_output.c
         source/utilities/_pp.h
         source/testing/_test.c
         source/mocking/_mock.c
@@ -36,7 +36,7 @@ set(testable_source_files
         source/utilities/_stack.h
         source/testing/_runner.c
         source/testing/_runner.h
-        include/runners.h source/testing/query.c source/testing/query.h source/utilities/_callback.c source/utilities/_callback.h)
+        include/runners.h source/testing/_query.c source/testing/_query.h source/utilities/_callback.c source/utilities/_callback.h)
 
 
 include_directories(include)

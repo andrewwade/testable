@@ -4,15 +4,16 @@
 #include <stdlib.h>
 #include <printf.h>
 #include "../utilities/_list.h"
-#include "_test.h"
 #include "../utilities/_pool.h"
+#include "_test.h"
+#include <clarity/testing.h>
 
 #ifndef TEST_POOL_SIZE
 #define TEST_POOL_SIZE 512
 #endif
 
 static _test_t test_pool_buffer[TEST_POOL_SIZE];
-static _pool_t  test_pool = {0};
+static _pool_t test_pool = {0};
 
 
 static VOID test_assert_fail_callback(void *user, int code, char *message) {
@@ -35,8 +36,7 @@ void _test_pool_initialize() {
 }
 
 VOID _test_initialize(_test_t *self, CHAR *name, VOID (*run)(_test_t *)) {
-    self->name      = name;
-    self->status    = 0;
+    self->name = name;
     self->run  = run;
     _list_init(&self->fail_callbacks, self);
 }

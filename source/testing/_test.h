@@ -5,15 +5,15 @@
 #ifndef TESTABLE_TEST_H
 #define TESTABLE_TEST_H
 
-#include <testable.h>
 #include "platform.h"
-#include "../utilities/_node.h"
+#include "_assert.h"
 #include "../utilities/_list.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef struct _group_t _group_t;
+
+typedef struct _test_t _test_t;
 /**
  * Test Control Block
  * @var name        Name of test
@@ -22,21 +22,16 @@ typedef struct _group_t _group_t;
  * @var group       Group containing test (if any)
  * @var function    Pointer to function where test is defined
  */
-typedef struct _test_t {
+struct _test_t {
     /* name of the test */
     CHAR *name;
 
-    _group_t *group;
-
-    /* status of the test */
-    INT status;
-
-    /* notes acquired during testing (if any) */
+    _list_t asserts;
+    _list_t mocks;
     _list_t fail_callbacks;
 
     VOID (*run)(struct _test_t *test);
-
-} _test_t;
+};
 
 /**
  * Initialize a test with default values

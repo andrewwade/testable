@@ -5,15 +5,14 @@
 #ifndef TESTABLE_GROUP_H
 #define TESTABLE_GROUP_H
 
+#include "_test.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../utilities/_list.h"
-
+_test_t *t;
 typedef struct _group_t _group_t;
-typedef struct _test_t _test_t;
 
 /**
  * Group Control Block
@@ -51,18 +50,6 @@ struct _group_t {
 
     /* all skipped tests in group */
     _list_t skip;
-
-    /* number of tests in group */
-    UINT test_count;
-
-    /* number of passed tests in group */
-    UINT pass_count;
-
-    /* number of failed tests in group */
-    UINT fail_count;
-
-    /* number of skipped tests in group */
-    UINT skip_count;
 };
 
 /**

@@ -1,4 +1,4 @@
-#include "testable.h"
+#include "clarity/testing.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <memory.h>
@@ -58,7 +58,7 @@ static void messege_append_location(char *buf, char *file, unsigned int line) {
         max_length--;
         buf++;
     }
-    snprintf(buf, max_length, "     Location: %s(%d):\n", file, line);
+    snprintf(buf, max_length, "Assert Failed at %s(%d):\n", file, line);
 }
 
 static void messege_append_failure(char *buf, char *fmt, ...) {
@@ -71,7 +71,7 @@ static void messege_append_failure(char *buf, char *fmt, ...) {
         buf++;
     }
 
-    write_length = snprintf(buf, max_length, "Assert Failed: ");
+    write_length = snprintf(buf, max_length, "%10s: ", "Failure");
     buf += write_length;
     max_length -= write_length;
     va_start(args, fmt);
@@ -98,10 +98,10 @@ static void messege_append_condition(char *buf, char *explanation, int condition
         explanation = null;
     }
 
-    write_length = snprintf(buf, max_length, "    Condition: %s\n", explanation);
+    write_length = snprintf(buf, max_length, "%10s: %s\n", "Condition", explanation);
     buf += write_length;
     max_length -= write_length;
-    snprintf(buf, max_length, "       Result: %s\n", (condition) ? "true":"false");
+    snprintf(buf, max_length, "%10s: %s\n", "Result", (condition) ? "true":"false");
 
 }
 static void messege_append_argument(char *buf, char *arg, char *arg_name, char *fmt, ...) {
@@ -121,7 +121,7 @@ static void messege_append_argument(char *buf, char *arg, char *arg_name, char *
         arg_name = null;
     }
 
-    write_length = snprintf(buf, max_length, "%13s: %16s: ", arg, arg_name);
+    write_length = snprintf(buf, max_length, "%10s: %-16s: ", arg, arg_name);
     buf += write_length;
     max_length -= write_length;
 
@@ -161,7 +161,7 @@ static void messege_append_vmessage(char *buf, char *fmt, va_list args) {
         buf++;
     }
 
-    write_length = snprintf(buf, max_length, "%13s: ", "Message");
+    write_length = snprintf(buf, max_length, "%10s: ", "Message");
     buf += write_length;
     max_length -= write_length;
 

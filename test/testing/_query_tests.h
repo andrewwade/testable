@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "testable.h"
+#include "clarity/testing.h"
 
 TEST_GROUP(query_tests);
 

@@ -3,7 +3,7 @@
 //
 
 #include "_test_tests.h"
-#include "../../source/testing/_test.h"
+#include <clarity/testing.h>
 
 TEST(_test_should_do_something) {
 

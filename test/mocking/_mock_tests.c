@@ -2,7 +2,7 @@
 // Created by Andrew Wade on 2019-01-20.
 //
 #include "_mock_tests.h"
-#include "mockable.h"
+#include "clarity/mocking.h"
 #include "stdio.h"
 
 

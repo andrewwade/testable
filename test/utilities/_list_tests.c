@@ -7,7 +7,7 @@
 // Created by Andrew Wade on 7/1/18.
 //
 
-#include "testable.h"
+#include "clarity/testing.h"
 #include "../../source/utilities/_list.h"
 #include <setjmp.h>
 #include <printf.h>
@@ -43,8 +43,8 @@ TEST(_list_remove_links_next_to_previous) {
 
 TEST(_list_insert_check_for_null_nodes) {
     _node_t node;
-    EXPECT_ASSERT_FAILURE(_list_insert(NULL,&node, 0));
-    EXPECT_ASSERT_FAILURE(_list_insert(&node, NULL, 0));
+    EXPECT_ASSERT_FAILURE(_list_insert(NULL, 0, &node));
+    EXPECT_ASSERT_FAILURE(_list_insert(&node, 0, NULL));
 }
 
 TEST_GROUP(list_tests) {

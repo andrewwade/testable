@@ -3,7 +3,7 @@
 //
 
 #include "_query_tests.h"
-#include "../../source/testing/query.h"
+#include "../../source/testing/_query.h"
 
 
 QUERY(EQUALS_INT_N, int, int) {

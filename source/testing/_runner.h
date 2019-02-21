@@ -8,7 +8,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "_test.h"
+
 #include "_group.h"
 
 typedef struct _runner_t {
@@ -37,14 +37,6 @@ while(0)
         #name, /* name of group as string */                                \
         NULL,  /* setup to run before each test */                          \
         NULL,  /* teardown to run after each test */                        \
-        NULL,  /* list of tests in group */                                 \
-        NULL,  /* list of passed tests */                                   \
-        NULL,  /* list of failed tests */                                   \
-        NULL,  /* list of skipped tests */                                  \
-        0,     /* number of tests in group */                               \
-        0,     /* number of passed tests */                                 \
-        0,     /* number of failed tests */                                 \
-        0      /* number of skipped tests */                                \
     };                                                                      \
     _group_##name##_initialize(&_test_group_##name);                        \
     _group_run_all(&_test_group_##name);                                    \
@@ -58,14 +50,6 @@ _runner_t _test_runner_##name = {                                       \
         #name, /* name of group as string */                            \
         NULL,  /* setup to run before each test */                      \
         NULL,  /* teardown to run after each test */                    \
-        NULL,  /* list of tests in group */                             \
-        NULL,  /* list of passed tests */                               \
-        NULL,  /* list of failed tests */                               \
-        NULL,  /* list of skipped tests */                              \
-        0,     /* number of tests in group */                           \
-        0,     /* number of passed tests */                             \
-        0,     /* number of failed tests */                             \
-        0      /* number of skipped tests */                            \
     }                                                                   \
 }
 

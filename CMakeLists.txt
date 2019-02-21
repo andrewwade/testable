@@ -13,33 +13,30 @@ set(testable_include_files
         include/mockable.h)
 
 set(testable_source_files
-        source/_assert.c
-        source/_assert.h
-        source/_group.c
-        source/_group.h
-        source/_node.c
-        source/_node.h
-        source/_test.h
-        source/_output.h
-        source/_output.c
-        source/_pp.h
-        source/_test.c
-        source/_mock.c
-        source/_mock.h
-        source/_mock_call.h
-        source/_mock_call.c
-        source/_pool.c
-        source/_pool.h
-        source/_list.c
-        source/_list.h
-        source/_stack.c
-        source/_stack.h
-        source/_runner.c
-        source/_runner.h
-        include/runners.h source/query.c source/query.h)
-
-
-
+        source/testing/_assert.c
+        source/testing/_assert.h
+        source/testing/_group.c
+        source/testing/_group.h
+        source/utilities/_node.c
+        source/utilities/_node.h
+        source/testing/_test.h
+        source/testing/_output.h
+        source/testing/_output.c
+        source/utilities/_pp.h
+        source/testing/_test.c
+        source/mocking/_mock.c
+        source/mocking/_mock.h
+        source/mocking/_mock_call.h
+        source/mocking/_mock_call.c
+        source/utilities/_pool.c
+        source/utilities/_pool.h
+        source/utilities/_list.c
+        source/utilities/_list.h
+        source/utilities/_stack.c
+        source/utilities/_stack.h
+        source/testing/_runner.c
+        source/testing/_runner.h
+        include/runners.h source/testing/query.c source/testing/query.h source/utilities/_callback.c source/utilities/_callback.h)
 
 
 include_directories(include)
@@ -50,20 +47,20 @@ target_include_directories(testable INTERFACE include)
 
 link_libraries(testable)
 
-add_executable(test_node test/_node_tests.c test/_node_tests.h test/test_node.c)
-add_executable(test_mock test/_mock_tests.c test/_mock_tests.h test/test_mock.c)
+add_executable(test_node test/utilities/_node_tests.c test/utilities/_node_tests.h test/utilities/test_node.c)
+add_executable(test_mock test/mocking/_mock_tests.c test/mocking/_mock_tests.h test/mocking/test_mock.c)
 
 add_executable(test_all
-        test/_node_tests.c
-        test/_node_tests.h
-        test/_mock_tests.c
-        test/_mock_tests.h
+        test/utilities/_node_tests.c
+        test/utilities/_node_tests.h
+        test/mocking/_mock_tests.c
+        test/mocking/_mock_tests.h
         test/test_all.c
-        test/_list_tests.c
-        test/_list_tests.h
-        test/_pool_tests.c
-        test/_pool_tests.h
-        test/_query_tests.c
-        test/_query_tests.h
-        test/_test_tests.c
-        test/_test_tests.h)
+        test/utilities/_list_tests.c
+        test/utilities/_list_tests.h
+        test/utilities/_pool_tests.c
+        test/utilities/_pool_tests.h
+        test/testing/_query_tests.c
+        test/testing/_query_tests.h
+        test/testing/_test_tests.c
+        test/testing/_test_tests.h)

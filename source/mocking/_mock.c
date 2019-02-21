@@ -5,7 +5,7 @@
 
 #include <string.h>
 #include "_mock.h"
-#include "_list.h"
+#include "../utilities/_list.h"
 
 void _log_mock_call(_mock_t *mock, _mock_variable_t *argv) {
 //    printf("%s %s(", mock->return_value.type, mock->name);
@@ -19,41 +19,29 @@ void _log_mock_call(_mock_t *mock, _mock_variable_t *argv) {
 
 void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args) {
     _log_mock_call(mock, args);
-    _mock_call_t * received_call = _list_find_match(mock->received_calls, _mock_call_arg_matcher, args);
-    _mock_call_t * expected_call = _list_find_match(mock->expected_calls, _mock_call_arg_matcher, args);
+    _mock_call_t * received_call = _list_find(&mock->received_calls, _mock_call_arg_matcher, args, 0);
+    _mock_call_t * expected_call = _list_find(&mock->expected_calls, _mock_call_arg_matcher, args, 0);
 
     if(received_call == NULL) {
         if(expected_call == NULL) {
-            received_call = _mock_call_create(mock->return_value, args, mock->argc);
+            received_call = _mock_call_create(mock->file, mock->line, mock->return_value, args, mock->argc);
         } else {
-            received_call = _mock_call_create(expected_call->return_value, args, mock->argc);
+            received_call = _mock_call_create(expected_call->file, expected_call->line, expected_call->return_value, args, mock->argc);
             received_call->callback = expected_call->callback;
         }
     }
 
     _mock_call_increment_call_count(received_call);
-
-    if(mock->received_calls == NULL) {
-        mock->received_calls = _node_allocate();
-        mock->received_calls->data = received_call;
-    } else {
-        _list_append(mock->received_calls, received_call);
-    }
+    _list_append(&mock->received_calls, received_call);
 
     return received_call->return_value.address;
 }
 
-void _mock_expect_call(_mock_t *mock) {
-    _mock_call_t *new_expected_call = _mock_call_create(mock->return_value, (_mock_variable_t *) mock->argv, mock->argc);
+void _mock_expect_call(_mock_t *mock, const char *file, uint32_t line) {
+    _mock_call_t *new_expected_call = _mock_call_create(file, line, mock->return_value, (_mock_variable_t *) mock->argv, mock->argc);
     new_expected_call->call_count = 1;
     new_expected_call->callback   = NULL;
-    if(mock->expected_calls == NULL) {
-        mock->expected_calls = _node_allocate();
-        mock->expected_calls->data = new_expected_call;
-    } else {
-        _list_append(mock->expected_calls, new_expected_call);
-    }
-    mock->expected_call_count++;
+    _list_append(&mock->expected_calls, new_expected_call);
 }
 
 void _mock_expect_call_callback(_mock_t *mock, void *callback) {
@@ -78,9 +66,9 @@ void _mock_expect_call_times(_mock_t *mock, uint32_t multiplier) {
 }
 
 _mock_call_t *_mock_get_last_expected_call(_mock_t *mock) {
-    return _node_data(_list_last(mock->expected_calls));
+    return _list_last(&mock->expected_calls);
 }
 
 _mock_call_t *_mock_get_last_received_call(_mock_t *mock) {
-    return _node_data(_list_last(mock->received_calls));
+    return _list_last(&mock->received_calls);
 }

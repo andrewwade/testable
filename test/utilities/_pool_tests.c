@@ -3,7 +3,7 @@
 //
 
 #include "_pool_tests.h"
-#include "../source/_pool.h"
+#include "../../source/utilities/_pool.h"
 
 struct int_eval_t {
     int  expected;

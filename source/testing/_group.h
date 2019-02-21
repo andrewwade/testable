@@ -10,6 +10,10 @@
 extern "C" {
 #endif
 
+#include "../utilities/_list.h"
+
+typedef struct _group_t _group_t;
+typedef struct _test_t _test_t;
 
 /**
  * Group Control Block
@@ -25,7 +29,7 @@ extern "C" {
  * @var fail_count      Number of failed tests in group
  * @var skip_count      Number of skipped tests in group
  */
-typedef struct _group_t {
+struct _group_t {
 
     /* name of group */
     const char *name;
@@ -37,16 +41,16 @@ typedef struct _group_t {
     struct _test_t *teardown;
 
     /* all tests in group */
-    struct _node_t *test;
+    _list_t test;
 
     /* all passed tests in group */
-    struct _node_t *pass;
+    _list_t pass;
 
     /* all failed tests in group */
-    struct _node_t *fail;
+    _list_t fail;
 
     /* all skipped tests in group */
-    struct _node_t *skip;
+    _list_t skip;
 
     /* number of tests in group */
     UINT test_count;
@@ -59,7 +63,7 @@ typedef struct _group_t {
 
     /* number of skipped tests in group */
     UINT skip_count;
-} _group_t;
+};
 
 /**
  * Run all tests in group
@@ -72,42 +76,42 @@ VOID _group_run_tests(_group_t *group);
  * @param group
  * @param test
  */
-VOID _group_set_setup(_group_t *group, struct _test_t *setup);
+VOID _group_set_setup(_group_t *group, _test_t *setup);
 
 /**
  * Set the teardown test to be ran after each test case
  * @param group
  * @param test
  */
-VOID _group_set_teardown(_group_t *group, struct _test_t *teardown);
+VOID _group_set_teardown(_group_t *group, _test_t *teardown);
 
 /**
  * Add a test to the group.
  * @param group
  * @param test
  */
-VOID _group_add_test(_group_t *group, struct _test_t *test);
+VOID _group_add_test(_group_t *group, _test_t *test);
 
 /**
  * Should be called when a test completes with failures
  * @param group
  * @param test
  */
-VOID _group_add_fail(_group_t *group, struct _test_t *test);
+VOID _group_add_fail(_group_t *group, _test_t *test);
 
 /**
  * Should be called when a test completes without failures
  * @param group
  * @param test
  */
-VOID _group_add_pass(_group_t *group, struct _test_t *test);
+VOID _group_add_pass(_group_t *group, _test_t *test);
 
 /**
  * Should be called when a test gets skipped
  * @param group
  * @param test
  */
-VOID _group_add_skip(_group_t *group, struct _test_t *test);
+VOID _group_add_skip(_group_t *group, _test_t *test);
 
 /**
  * Get the setup test to be ran before each test case

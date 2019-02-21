@@ -8,39 +8,43 @@
 //
 
 #include "testable.h"
-#include "../source/_list.h"
+#include "../../source/utilities/_list.h"
 #include <setjmp.h>
 #include <printf.h>
 
 
 TEST(_list_remove_check_for_null_node) {
-    _list_remove(NULL);
+    _list_remove(NULL, NULL);
 }
 
 TEST(_list_remove_links_previous_to_next) {
+    _list_t list;
     _node_t node, next, previous;
 
     node.next = &next;
     node.prev = &previous;
-    _list_remove(&node);
+    list.elements = &node;
+    list.size = 1;
+    _list_remove(&list, &node);
 
     ASSERT_PTR_EQ(&next, previous.next);
 }
 
 TEST(_list_remove_links_next_to_previous) {
+    _list_t list;
     _node_t node, next, previous;
 
     node.next     = &next;
     node.prev = &previous;
-    _list_remove(&node);
+    _list_remove(&list, &node);
 
     ASSERT_PTR_EQ(&previous, next.prev);
 }
 
 TEST(_list_insert_check_for_null_nodes) {
     _node_t node;
-    EXPECT_ASSERT_FAILURE(_list_insert(NULL,&node));
-    EXPECT_ASSERT_FAILURE(_list_insert(&node, NULL));
+    EXPECT_ASSERT_FAILURE(_list_insert(NULL,&node, 0));
+    EXPECT_ASSERT_FAILURE(_list_insert(&node, NULL, 0));
 }
 
 TEST_GROUP(list_tests) {

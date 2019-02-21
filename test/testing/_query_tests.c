@@ -3,18 +3,23 @@
 //
 
 #include "_query_tests.h"
-#include "../source/query.h"
+#include "../../source/testing/query.h"
 
 
 QUERY(EQUALS_INT_N, int, int) {
-ASSERT_INT_EQ(input, subject);
+    ASSERT_INT_EQ(input, subject);
 }
 
 QUERY(IS_NULL, void*, void) {
     ASSERT_PTR_NULL(subject);
 }
+
 QUERY(IS_NOT_NULL, void*, void) {
     ASSERT_PTR_NOT_NULL(subject);
+}
+
+QUERY(INPUT_WORKS, void, int) {
+    ASSERT_INT_EQ(3, query->input.value);
 }
 
 TEST(integer_query_example) {
@@ -22,6 +27,11 @@ TEST(integer_query_example) {
 
     EXPECT_THAT(x, EQUALS_INT_N(4));
     EXPECT_THAT(NULL, IS_NOT_NULL());
+}
+
+TEST(integer_input_query) {
+    int x = 3;
+//    EXPECT_THAT(INPUT_WORKS(3));
 }
 
 TEST_GROUP(query_tests) {

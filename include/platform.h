@@ -47,6 +47,38 @@ extern "C" {
 #define UINT unsigned int
 #endif /* UINT */
 
+#ifndef U64
+#define U64 unsigned long
+#endif
+
+#ifndef U32
+#define U32 unsigned int
+#endif
+
+#ifndef U16
+#define U16 unsigned short
+#endif
+
+#ifndef U8
+#define U8 unsigned char
+#endif
+
+#ifndef I64
+#define I64 unsigned long
+#endif
+
+#ifndef I32
+#define I32 int
+#endif
+
+#ifndef I16
+#define I16 short
+#endif
+
+#ifndef I8
+#define I8 char
+#endif
+
 #ifndef LONG
 #define LONG long
 #endif /* LONG */

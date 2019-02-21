@@ -5,7 +5,7 @@
 #include <string.h>
 #include <asserts.h>
 #include "_mock_call.h"
-#include "_pool.h"
+#include "../utilities/_pool.h"
 
 
 _mock_call_t mock_call_buffer[MOCK_CALL_BUFFER_SIZE];
@@ -88,9 +88,11 @@ void _mock_variable_destroy(_mock_variable_t *variable) {
     variable->name = NULL;
 }
 
-_mock_call_t * _mock_call_create(_mock_value_t returns, _mock_variable_t *argv, uint8_t argc) {
+_mock_call_t * _mock_call_create(const char *file, uint32_t line, _mock_value_t returns, _mock_variable_t *argv, uint8_t argc) {
     _mock_call_t *new_call = allocate_call();
     if(new_call != NULL) {
+        new_call->file = file;
+        new_call->line = line;
         new_call->call_count = 0;
         new_call->callback   = NULL;
         new_call->argv       = NULL;

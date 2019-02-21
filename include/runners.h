@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "../source/_runner.h"
+#include "../source/testing/_runner.h"
 
 #ifdef __cplusplus
 };

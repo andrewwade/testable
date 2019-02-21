@@ -5,7 +5,7 @@
 #ifndef TESTABLE_ASSERTS_H
 #define TESTABLE_ASSERTS_H
 
-#include "../source/_assert.h"
+#include "../source/testing/_assert.h"
 #include "platform.h"
 
 #ifdef __cplusplus
@@ -21,21 +21,17 @@ extern "C" {
 #define MSG(...) MSG_FMT(__VA_ARGS__) MSG_ARGS(__VA_ARGS__)
 
 
-#define EXPECT_ASSERT_FAILURE(call_function, message...)    \
-do {                                                        \
-    jmp_buf assert_fail_point = {0};                        \
-    fail_callback_t fail_callback = {NULL,NULL};            \
-    _assert_push_fail_point(&assert_fail_point);            \
-    _assert_add_fail_callback(&fail_callback);              \
-    if (!setjmp(assert_fail_point)) {                       \
-        call_function;                                      \
-        _assert_pop_fail_point();                           \
-        _assert_remove_fail_callback(&fail_callback);       \
-        _assert_force_failure(#call_function, LOC, MSG(message));                                 \
-    } else {                                                \
-        _assert_remove_fail_callback(&fail_callback);       \
-        _assert_pop_fail_point();                           \
-    }                                                       \
+#define EXPECT_ASSERT_FAILURE(call_function, message...)            \
+do {                                                                \
+    jmp_buf assert_fail_point = {0};                                \
+    _assert_expect_failure(&assert_fail_point);                     \
+    if (!setjmp(assert_fail_point)) {                               \
+        call_function;                                              \
+        _assert_cleanup_expected_failure(&assert_fail_point);       \
+        _assert_force_failure(#call_function, LOC, MSG(message));   \
+    } else {                                                        \
+        _assert_cleanup_expected_failure(&assert_fail_point);       \
+    }                                                               \
 } while(0)
 
 

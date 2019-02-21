@@ -11,9 +11,10 @@ extern "C" {
 
 #include <printf.h>
 #include "stdint.h"
-#include "_node.h"
-#include "_pp.h"
+#include "../utilities/_node.h"
+#include "../utilities/_pp.h"
 #include "_mock_call.h"
+#include "../utilities/_list.h"
 
 #define _MOCK_GET_MOCK(name) _mock_##name
 #define _MOCK_GET_MOCK_CALL_BUILDER_TYPE(name) _mock_##name##_call_builder_t
@@ -21,9 +22,11 @@ extern "C" {
 #define _MOCK_GET_MOCK_CALL_BUILDER_FUNC(name, func) _mock_##name##_builder_##func
 
 typedef struct _mock_t {
+    const char             *file;
+    uint32_t               line;
     const char             *name;
-    _node_t                *expected_calls;
-    _node_t                *received_calls;
+    _list_t                expected_calls;
+    _list_t                received_calls;
     uint32_t               expected_call_count;
     uint32_t               received_call_count;
     const _mock_value_t    return_value;
@@ -35,6 +38,8 @@ typedef struct _mock_t {
 #define _MOCK_CREATE_MOCK(return_type, fname, args...)                                                              \
 /* mock definition */                                                                                               \
 _mock_t _MOCK_GET_MOCK(fname) = {                                                                                   \
+    .file = __FILE__,                                                                                               \
+    .line = __LINE__,                                                                                               \
     .name = #fname,                                                                                                 \
     .expected_calls = NULL,                                                                                         \
     .received_calls = NULL,                                                                                         \
@@ -58,7 +63,7 @@ return_type fname(LIST_PAIRS(args)) {                                           
     )                                                                                                               \
     IF(HAS_NO_ARGS(args)) (                                                                                         \
         void *return_value_ptr = _mock_handle_call(&_MOCK_GET_MOCK(fname), NULL);                                   \
-        void (*call_callback)(LIST_PAIRS(args)) = _mock_get_last_received_call(&_MOCK_GET_MOCK(fname))->callback;   \
+        void (*call_callback)() = _mock_get_last_received_call(&_MOCK_GET_MOCK(fname))->callback;                   \
         if(call_callback != NULL) {                                                                                 \
             call_callback();                                                                                        \
         }                                                                                                           \
@@ -128,8 +133,8 @@ _MOCK_GET_MOCK_CALL_BUILDER_FUNC(fname, expect_call_callback)(void (*callback)(L
 }                                                                                                                   \
                                                                                                                     \
 const _MOCK_GET_MOCK_CALL_BUILDER_TYPE(fname)                                                                       \
-_MOCK_GET_MOCK_CALL_BUILDER_FUNC(fname, expect_call)() {                                                            \
-    _mock_expect_call(&_MOCK_GET_MOCK(fname));                                                                      \
+_MOCK_GET_MOCK_CALL_BUILDER_FUNC(fname, expect_call)(const char *file, uint32_t line) {                             \
+    _mock_expect_call(&_MOCK_GET_MOCK(fname), file, line);                                                          \
     return _MOCK_GET_MOCK_CALL_BUILDER(fname);                                                                      \
 }                                                                                                                   \
                                                                                                                     \
@@ -158,11 +163,11 @@ IF(NOT(TYPE_IS_VOID(return_type)))(                                             
 )                                                                                                                   \
 
 
-#define _MOCK_EXPECT_CALL(fname) _MOCK_GET_MOCK_CALL_BUILDER_FUNC(fname, expect_call)()
+#define _MOCK_EXPECT_CALL(fname) _MOCK_GET_MOCK_CALL_BUILDER_FUNC(fname, expect_call)(__FILE__, __LINE__)
 
 void *_mock_handle_call(_mock_t *mock, _mock_variable_t *args);
 
-void _mock_expect_call(_mock_t *mock);
+void _mock_expect_call(_mock_t *mock, const char *file, uint32_t line);
 
 void _mock_expect_call_callback(_mock_t *mock, void *callback);
 

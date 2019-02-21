@@ -14,7 +14,7 @@ void _node_pool_initialize() {
     _pool_init(&pool, sizeof(_node_t), pool_buffer, pool_buffer+NODE_POOL_SIZE);
 }
 
-void *_node_allocate() {
+_node_t *_node_allocate() {
     _node_t *new_node;
 
     /* initialize pool if required */

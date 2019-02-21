@@ -5,7 +5,7 @@
 #ifndef TESTABLE_TESTS_H
 #define TESTABLE_TESTS_H
 
-#include "../source/_test.h"
+#include "../source/testing/_test.h"
 
 #ifdef __cplusplus
 extern "C" {

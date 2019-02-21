@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 #include "stdint.h"
-#include "_node.h"
+#include "../utilities/_node.h"
 
 #define MOCK_CALL_BUFFER_SIZE 256
 #define MOCK_BYTE_BUFFER_SIZE 512
@@ -34,6 +34,8 @@ typedef struct _mock_variable_t {
 #define _MOCK_VARIABLE_FROM_VAR(type, var) { #var, _MOCK_VALUE_FROM_VAR(type, var)}
 
 typedef struct _mock_call_t {
+    const char *file;
+    uint32_t line;
     void *callback;
     uint32_t         call_count;
     _mock_value_t    return_value;
@@ -42,7 +44,7 @@ typedef struct _mock_call_t {
 } _mock_call_t;
 
 
-_mock_call_t * _mock_call_create(_mock_value_t returns, _mock_variable_t *argv, uint8_t argc);
+_mock_call_t * _mock_call_create(const char *file, uint32_t line, _mock_value_t returns, _mock_variable_t *argv, uint8_t argc);
 
 void _mock_call_destroy(_mock_call_t * call);
 

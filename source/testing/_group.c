@@ -3,7 +3,7 @@
 //
 
 #include "asserts.h"
-#include "_list.h"
+#include "../utilities/_list.h"
 #include "_test.h"
 #include "_group.h"
 #include <stdio.h>
@@ -25,7 +25,7 @@ void _group_run_tests(_group_t *group) {
 
     setup    = group->setup;
     teardown = group->teardown;
-    head     = group->test;
+    head     = group->test.elements;
     node     = head;
 
     ASSERT_PTR_NE(head, NULL, "No tests to run in group %s.", group->name);
@@ -58,7 +58,7 @@ void _group_run_tests(_group_t *group) {
             /* check if setup exists */
             if (setup) {
                 /* run setup */
-                setup->function(setup);
+                setup->run(setup);
             }
 
             /* run test function */
@@ -67,7 +67,7 @@ void _group_run_tests(_group_t *group) {
             /* check if teardown exists */
             if (teardown) {
                 /* run teardown function */
-                teardown->function(teardown);
+                teardown->run(teardown);
             }
             _group_add_pass(group, test);
 
@@ -87,7 +87,7 @@ void _group_run_tests(_group_t *group) {
     /* remove group fail point */
     _assert_pop_fail_point();
 
-    TEST_OUTPUT("\nTest group '%s' passed %d out of %d.\n\n", group->name, group->pass_count, group->test_count);
+    TEST_OUTPUT("\nTest group '%s' passed %d out of %d.\n\n", group->name, group->pass.size, group->test.size);
 }
 
 void _group_set_setup(_group_t *group, _test_t *test) {
@@ -99,99 +99,31 @@ void _group_set_teardown(_group_t *group, _test_t *test) {
 }
 
 void _group_add_test(_group_t *group, _test_t *test) {
-    _node_t *new_node;
-
     ASSERT_PTR_NE(group, NULL);
     ASSERT_PTR_NE(test, NULL);
-    ASSERT_PTR_NE(new_node = _node_allocate(), NULL);
 
-    /* set node data to test */
-    _node_initialize(new_node, test);
-
-    /* check if group is empty */
-    if (group->test == NULL) {
-        /* add first test into group */
-        group->test = new_node;
-    } else {
-        /* add test to group */
-        _list_insert(group->test, new_node);
-    }
-    group->test_count++;
+    _list_append(&group->test, test);
 }
 
 void _group_add_fail(_group_t *group, _test_t *test) {
-    _node_t *new_node;
-
     ASSERT_PTR_NE(NULL, group);
     ASSERT_PTR_NE(NULL, test);
 
-    /* get new node */
-    ASSERT_PTR_NE(NULL, new_node = _node_allocate());
-
-    /* initialize new node with test */
-    _node_initialize(new_node, test);
-
-    /* check if fail list is empty */
-    if(group->fail == NULL) {
-        /* insert new node into fail list as first node */
-        group->fail = new_node;
-    } else {
-        /* insert new node into fail list */
-        _list_insert(group->fail, new_node);
-    }
-
-    /* increase number of failed tests */
-    group->fail_count++;
+    _list_append(&group->fail, test);
 }
 
 void _group_add_pass(_group_t *group, _test_t *test) {
-    _node_t *new_node;
-    
     ASSERT_PTR_NE(NULL, group);
     ASSERT_PTR_NE(NULL, test);
-    
-    /* get new node */
-    ASSERT_PTR_NE(NULL, new_node = _node_allocate());
-    
-    /* initialize new node with test */
-    _node_initialize(new_node, test);
-    
-    /* check if pass list is empty */
-    if(group->pass == NULL) {
-        /* insert new node into pass list as first node */
-        group->pass = new_node;
-    } else {
-        /* insert new node into pass list */
-        _list_insert(group->pass, new_node);
-    }
-    
-    /* increase number of passed tests */
-    group->pass_count++;
+
+    _list_append(&group->pass, test);
 }
 
 void _group_add_skip(_group_t *group, _test_t *test) {
-    _node_t *new_node;
-
     ASSERT_PTR_NE(NULL, group);
     ASSERT_PTR_NE(NULL, test);
 
-    /* get new node */
-    ASSERT_PTR_NE(NULL, new_node = _node_allocate());
-
-    /* initialize new node with test */
-    _node_initialize(new_node, test);
-
-    /* check if skip list is empty */
-    if(group->skip == NULL) {
-        /* insert new node into skip list as first node */
-        group->skip = new_node;
-    } else {
-        /* insert new node into skip list */
-        _list_insert(group->skip, new_node);
-    }
-
-    /* increase number of skipped tests */
-    group->skip_count++;
+    _list_append(&group->skip, test);
 }
 
 _test_t *_group_get_setup(_group_t *group) {
@@ -206,40 +138,40 @@ _test_t *_group_get_teardown(_group_t *group) {
 
 _node_t *_group_get_all_tests(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->test;
+    return group->test.elements;
 }
 
 _node_t *_group_get_passed_tests(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->pass;
+    return group->pass.elements;
 }
 
 _node_t *_group_get_failed_tests(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->fail;
+    return group->fail.elements;
 }
 
 _node_t *_group_get_skipped_tests(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->skip;
+    return group->skip.elements;
 }
 
 UINT _group_get_test_count(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->test_count;
+    return group->test.size;
 }
 
 UINT _group_get_pass_count(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->pass_count;
+    return group->pass.size;
 }
 
 UINT _group_get_fail_count(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->fail_count;
+    return group->fail.size;
 }
 
 UINT _group_get_skip_count(_group_t *group) {
     ASSERT_PTR_NE(NULL, group);
-    return group->skip_count;
+    return group->skip.size;
 }

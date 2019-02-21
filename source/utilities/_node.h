@@ -11,37 +11,42 @@
 extern "C" {
 #endif
 
-#ifndef NODE_POOL_SIZE
-#define NODE_POOL_SIZE 256
+#ifndef NODE
+#define NODE _node_t
 #endif
 
+#ifndef NODE_POOL_SIZE
+#define NODE_POOL_SIZE 512
+#endif
 
-typedef struct _node_t {
-    void           *data;       /* user data */
-    struct _node_t *prev;       /* prev node in list */
-    struct _node_t *next;       /* next node in list */
-} _node_t;
+typedef struct _node_t _node_t;
 
-typedef int (*_node_matcher_t)(void *node_data, void *matcher_data);
+struct _node_t {
+    VOID *data;       /* user data */
+    _node_t *prev;       /* prev node in list */
+    _node_t *next;       /* next node in list */
+};
+
+typedef INT (*_comparator_t)(VOID *lhs, VOID *rhs);
 
 /**
  * Allocate a new node
  * @return
  */
-void *_node_allocate();
+_node_t *_node_allocate();
 
 /**
  * Release a prevly allocated node
  * @param node
  */
-void _node_release(_node_t *node);
+VOID _node_release(_node_t *node);
 
 /**
  * Initialize a node with user data
  * @param node Node to initialize
  * @param data User data for node to contain
  */
-void _node_initialize(_node_t *node, void *data);
+VOID _node_initialize(_node_t *node, VOID *data);
 
 
 

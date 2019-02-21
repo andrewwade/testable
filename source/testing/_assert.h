@@ -36,6 +36,10 @@ VOID _assert_add_fail_callback(fail_callback_t *callback);
 
 VOID _assert_remove_fail_callback(fail_callback_t *callback);
 
+VOID _assert_expect_failure(jmp_buf *point);
+
+VOID _assert_cleanup_expected_failure(jmp_buf *point);
+
 /** BOOL **/
 VOID _assert_true(ARG(BOOL, condition), LOC, MSG);
 

@@ -7,12 +7,13 @@
 
 #include <testable.h>
 #include "platform.h"
-#include "_node.h"
+#include "../utilities/_node.h"
+#include "../utilities/_list.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+typedef struct _group_t _group_t;
 /**
  * Test Control Block
  * @var name        Name of test
@@ -25,26 +26,25 @@ typedef struct _test_t {
     /* name of the test */
     CHAR *name;
 
+    _group_t *group;
+
     /* status of the test */
     INT status;
 
     /* notes acquired during testing (if any) */
-    _node_t *callbacks;
+    _list_t fail_callbacks;
 
-    INT callbacks_count;
-
-    /* test function  to run */
-    VOID (*function)(struct _test_t *test);
+    VOID (*run)(struct _test_t *test);
 
 } _test_t;
 
 /**
  * Initialize a test with default values
- * @param test      test control block to initialize
+ * @param self      test control block to initialize
  * @param name      name of test
  * @param function  function pointer to test function
  */
-VOID _test_initialize(_test_t *test, CHAR *name, VOID (*function)(_test_t *));
+VOID _test_initialize(_test_t *self, CHAR *name, VOID (*function)(_test_t *));
 
 /**
  * Allocate a new test control block
@@ -54,9 +54,9 @@ _test_t *_test_allocate();
 
 /**
  * Release a test control block back to memory
- * @param test pointer to releasing test control block
+ * @param self pointer to releasing test control block
  */
-VOID _test_release(_test_t *test);
+VOID _test_release(_test_t *self);
 
 /**
  * Add failure callback for when test fails
